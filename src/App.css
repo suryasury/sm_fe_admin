@@ -1,3 +1,13 @@
-* {
-  font-family: "Open Sans", sans-serif !important;
+.css-12i7wg6-MuiPaper-root-MuiDrawer-paper {
+  margin-top: 90px;
+}
+
+.drawerPaper {
+  width: 240px;
+  flex-shrink: 0;
+  border-right: 1px solid grey;
+}
+
+.activeMenuItem {
+  background-color: rgb(225, 225, 225);
 }

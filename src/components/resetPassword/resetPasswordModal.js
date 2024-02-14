@@ -12,7 +12,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
-import { passwordReset } from "../api/api";
+import { passwordReset } from "../../api/api";
 import { useSnackbar } from "notistack";
 import { Icon } from "@iconify/react";
 

@@ -1,0 +1,142 @@
+.invoice-container {
+  width: 21cm;
+  min-height: 29.7cm;
+  margin: 0 auto;
+  background-color: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.company-details {
+  width: 38%;
+}
+
+.invoice-header {
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* background-color: #f1f1f1; */
+  border-bottom: 1px solid #ccc;
+  background-color: #fff;
+}
+
+.invoice-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #333;
+}
+
+.invoice-header p {
+  margin: 0;
+  font-size: 1rem;
+  color: #666;
+}
+
+.invoice-section {
+  padding: 2rem;
+}
+
+.invoice-section h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  /* margin-top: 2rem; */
+}
+
+.invoice-table th,
+.invoice-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+.invoice-table th {
+  background-color: #f1f1f1;
+}
+
+.invoice-table tfoot td {
+  text-align: right;
+  font-weight: bold;
+}
+
+.invoice-footer {
+  padding: 2rem;
+  text-align: center;
+  background-color: #fff;
+  border-top: 1px solid #ccc;
+  opacity: 0.5;
+  font-weight: bold;
+}
+
+/* @media print {
+  body,
+  html {
+    margin: 0;
+    padding: 0;
+  }
+
+  .invoice-container {
+    width: 21cm;
+    min-height: 29.7cm;
+    margin: 0 auto;
+    padding: 2cm;
+    background-color: #fff;
+    box-shadow: none;
+  }
+
+  .invoice-header,
+  .invoice-section,
+  .invoice-footer {
+    padding: 0;
+    margin: 0;
+  }
+
+  .company-logo {
+    max-width: 100px;
+  }
+} */
+/* Invoice Container */
+/* .invoice-container {
+    width: 21cm;
+    min-height: 29.7cm;
+    padding: 2cm;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+  }
+  .invoice-header {
+    text-align: center;
+  }
+  
+  .invoice-header h1 {
+    margin-top: 0;
+  }
+  .invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .invoice-table,
+  .invoice-table th,
+  .invoice-table td {
+    border: 1px solid #ccc;
+  }
+  
+  .invoice-table th,
+  .invoice-table td {
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .invoice-table tfoot td {
+    text-align: right;
+  }
+  .invoice-footer {
+    margin-top: 20px;
+    text-align: center;
+  } */

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Typography, styled, Container, Link, Box } from "@mui/material";
 import { motion } from "framer-motion";
 import { useNavigate, Navigate } from "react-router-dom";
-import { forgotPassword } from "../api/api";
+import { forgotPassword } from "../../api/api";
 import { useSnackbar } from "notistack";
 import ForgotPasswordForm from "./forgotPasswordForm";
 
@@ -101,6 +101,8 @@ const ForgotPassword = () => {
             <Typography
               sx={{ color: "text.secondary", mb: 5 }}
               style={{ marginBottom: "25px" }}
+              fontSize={"1.4rem"}
+              fontWeight="bolder"
             >
               Forgot Password
             </Typography>

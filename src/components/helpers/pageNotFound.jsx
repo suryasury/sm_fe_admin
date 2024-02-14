@@ -22,7 +22,7 @@ const PageNotFound = () => {
         <Typography variant="h5" align="center" color="textSecondary" paragraph>
           Oops! It seems like the page you are looking for does not exist.
         </Typography>
-        <Link to="/dashboard" style={{ textDecoration: "none" }}>
+        <Link to="/student" style={{ textDecoration: "none" }}>
           <Button variant="contained" color="primary" fullWidth>
             Go back to the home page
           </Button>

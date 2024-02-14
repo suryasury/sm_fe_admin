@@ -11,10 +11,10 @@ import {
   IconButton,
   TextField,
 } from "@mui/material";
-import Header from "./header";
+import Header from "./header/header";
 import { Box, Container } from "@mui/system";
 import { getSectionDetails, getStudentList } from "../api/api";
-import PageLoader from "./pageLoader";
+import PageLoader from "./helpers/pageLoader";
 import { useNavigate, useParams, Outlet, useLocation } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";

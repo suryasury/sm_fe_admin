@@ -1,10 +1,11 @@
+// src/App.js
 import React, { useState } from "react";
 import { Typography, styled, Container, Link, Box } from "@mui/material";
 import { motion } from "framer-motion";
-import { useNavigate, Navigate, useParams } from "react-router-dom";
+import LoginForm from "./loginForm";
+import { useNavigate, Navigate } from "react-router-dom";
+import { loginService } from "../../api/api";
 import { useSnackbar } from "notistack";
-import ResetPasswordForm from "./resetPasswordForm";
-import { resetPassword } from "../api/api";
 
 const RootStyle = styled("div")({
   background: "rgb(249, 250, 251)",
@@ -45,20 +46,21 @@ const fadeInUp = {
   },
 };
 
-const ResetPassword = () => {
-  const { token } = useParams();
+const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   let isAuthenticated = !!localStorage.getItem("accessToken");
 
-  const handleSubmit = async (password) => {
+  const handleSubmit = async (email, password) => {
     try {
       setLoading(true);
-      let response = await resetPassword(password, token);
+      let response = await loginService({ email, password });
       response = response.data;
+      localStorage.setItem("accessToken", response.data.accessToken);
+      enqueueSnackbar(response.message, { variant: "success" });
       setLoading(false);
-      navigation("/password/reset/success");
+      navigation("/student");
     } catch (err) {
       setLoading(false);
       enqueueSnackbar(err?.response?.data?.message || err.message, {
@@ -98,11 +100,13 @@ const ResetPassword = () => {
             <Typography
               sx={{ color: "text.secondary", mb: 5 }}
               style={{ marginBottom: "25px" }}
+              fontSize={"1.4rem"}
+              fontWeight="bolder"
             >
-              Reset Password
+              Admin Login
             </Typography>
           </HeadingStyle>
-          <ResetPasswordForm handleFormData={handleSubmit} loading={loading} />
+          <LoginForm handleLoginSubmit={handleSubmit} loading={loading} />
         </ContentStyle>
       </Container>
     </RootStyle>
@@ -111,4 +115,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword;
+export default Login;

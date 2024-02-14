@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Typography, Button, styled } from "@mui/material";
-import Header from "./header";
+import Header from "./header/header";
 import {
   //  Box,
   Container,
@@ -9,23 +9,24 @@ import {
 import Password from "@mui/icons-material/Password";
 import RenderInfoCard from "./infoCard";
 import { getSections, getUserDetails } from "../api/api";
-import PageLoader from "./pageLoader";
+import PageLoader from "./helpers/pageLoader";
 import { useNavigate } from "react-router-dom";
-import NoDataCard from "./noDataFound";
-import ResetPasswordModal from "./resetPasswordModal";
+import NoDataCard from "./helpers/noDataFound";
+import ResetPasswordModal from "./resetPassword/resetPasswordModal";
 import { useSnackbar } from "notistack";
+import LayoutWrapper from "../layout/layout";
 
 const RootStyle = styled("div")({
-  display: "grid",
-  placeItems: "center",
+  // display: "grid",
+  // placeItems: "center",
 });
 
 const ContainerStyle = {
-  display: "flex",
-  justifyContent: "center",
-  flexDirection: "column",
-  alignItems: "center",
-  width: "100%",
+  // display: "flex",
+  // justifyContent: "center",
+  // flexDirection: "column",
+  // alignItems: "center",
+  // width: "100%",
 };
 
 const Dashboard = () => {
@@ -73,16 +74,15 @@ const Dashboard = () => {
     navigate(`/student/list/${sectionId}`);
   };
   return (
-    <>
-      <Header />
+    <LayoutWrapper>
       <RootStyle>
         {pageLoading ? (
           <PageLoader />
         ) : (
           <>
-            <Container
-              maxWidth="sm"
-              style={{ marginTop: "30px", ...ContainerStyle }}
+            <div
+              // maxWidth="sm"
+              style={{ margin: "30px", ...ContainerStyle }}
             >
               <Typography
                 variant="h4"
@@ -91,12 +91,14 @@ const Dashboard = () => {
                 Hi {userDetails?.name || "N/A"}
               </Typography>
               <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                style={
+                  {
+                    // width: "100%",
+                    // display: "flex",
+                    // alignItems: "center",
+                    // justifyContent: "center",
+                  }
+                }
               >
                 <Button
                   color="inherit"
@@ -113,13 +115,13 @@ const Dashboard = () => {
                 </Button>
               </div>
               <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-around",
-                  gap: 15,
-                  width: "100%",
-                  flexWrap: "wrap",
-                }}
+              // style={{
+              //   display: "flex",
+              //   justifyContent: "space-around",
+              //   gap: 15,
+              //   width: "100%",
+              //   flexWrap: "wrap",
+              // }}
               >
                 {sectionDetails.length > 0 ? (
                   sectionDetails.map((section) => {
@@ -138,7 +140,7 @@ const Dashboard = () => {
                   <NoDataCard />
                 )}
               </div>
-            </Container>
+            </div>
             <ResetPasswordModal
               open={modalOpen}
               handleClose={() => {
@@ -148,7 +150,7 @@ const Dashboard = () => {
           </>
         )}
       </RootStyle>
-    </>
+    </LayoutWrapper>
   );
 };
 

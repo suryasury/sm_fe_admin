@@ -2,15 +2,21 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PrivateRoute from "./privateRoute";
 import Dashboard from "./components/dashboard";
-import Login from "./components/login";
-import PageNotFound from "./components/pageNotFound";
-import ErrorFallBack from "./components/errorFallBack";
+import Login from "./components/login/login";
+import PageNotFound from "./components/helpers/pageNotFound";
+import ErrorFallBack from "./components/helpers/errorFallBack";
 import { SnackbarProvider } from "notistack";
 import StudentList from "./components/studentList";
-import StudentDetails from "./components/studentDetails";
-import ForgotPassword from "./components/forgotPassword";
-import ResetPassword from "./components/resetPassword";
-import PasswordResetSuccessPage from "./components/passwordResetSuccess";
+import StudentDetails from "./components/students/studentDetails";
+import ForgotPassword from "./components/forgotPassword/forgotPassword";
+import ResetPassword from "./components/resetPassword/resetPassword";
+import PasswordResetSuccessPage from "./components/resetPassword/passwordResetSuccess";
+import Students from "./components/students/students";
+import Teachers from "./components/teachers/teachers";
+import Sections from "./components/sections/sections";
+import AdminUsers from "./components/users/adminUsers";
+import FeesTransactions from "./components/feesDetails/feesTransactions";
+import Invoice from "./components/invoiceTemplate/invoiceTemplate";
 
 const App = () => {
   return (
@@ -36,13 +42,18 @@ const App = () => {
             element={<PrivateRoute />}
             errorElement={<ErrorFallBack />}
           >
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/student/list/:sectionId" element={<StudentList />} />
-            <Route
+            <Route path="/student" element={<Students />} />
+            <Route path="/duminv" element={<Invoice />} />
+            <Route path="/" element={<Students />} />
+            <Route path="/teachers" element={<Teachers />} />
+            <Route path="/sections" element={<Sections />} />
+            <Route path="/users" element={<AdminUsers />} />
+            <Route path="/fees-transactions" element={<FeesTransactions />} />
+            {/* <Route path="/student/list/:sectionId" element={<StudentList />} /> */}
+            {/* <Route
               path="/section/student/details/:studentId"
               element={<StudentDetails />}
-            />
+            /> */}
           </Route>
           <Route path="*" element={<PageNotFound />} />
         </Routes>

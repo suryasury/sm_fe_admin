@@ -8,7 +8,7 @@ const getAuthToken = () => {
 
 export const loginService = async (body) => {
   try {
-    let result = await axios.post(`${apiUrl}/api/teachers/login`, body, {
+    let result = await axios.post(`${apiUrl}/api/admin/login`, body, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -49,34 +49,13 @@ export const getSections = async () => {
   }
 };
 
-export const passwordReset = async (body) => {
+export const getStudentList = async (filters) => {
   try {
-    let result = await axios.patch(
-      `${apiUrl}/api/teachers/password/reset`,
-      body,
-      {
-        headers: {
-          Authorization: getAuthToken(),
-        },
-      }
-    );
-    return result;
-  } catch (err) {
-    console.log("error", err);
-    throw err;
-  }
-};
-
-export const getStudentList = async (sectionId, filters) => {
-  try {
-    let result = await axios.get(
-      `${apiUrl}/api/teachers/sections/students/list/${sectionId}` + filters,
-      {
-        headers: {
-          Authorization: getAuthToken(),
-        },
-      }
-    );
+    let result = await axios.get(`${apiUrl}/api/admin/student/list` + filters, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
     return result;
   } catch (err) {
     console.log("error", err);
@@ -120,7 +99,7 @@ export const getStudentDetails = async (studentId) => {
 
 export const forgotPassword = async (email) => {
   try {
-    let result = await axios.post(`${apiUrl}/api/teachers/forgot-password`, {
+    let result = await axios.post(`${apiUrl}/api/admin/forgot-password`, {
       email,
     });
     return result;
@@ -133,11 +112,25 @@ export const forgotPassword = async (email) => {
 export const resetPassword = async (password, token) => {
   try {
     let result = await axios.patch(
-      `${apiUrl}/api/teachers/reset-password/${token}`,
+      `${apiUrl}/api/admin/reset-password/${token}`,
       {
         password,
       }
     );
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const passwordReset = async (body) => {
+  try {
+    let result = await axios.patch(`${apiUrl}/api/admin/password/reset`, body, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
     return result;
   } catch (err) {
     console.log("error", err);

@@ -144,29 +144,6 @@ const LoginForm = ({ handleLoginSubmit, loading }) => {
               </Button>
             </Link>
           </Box>
-          {/* <Box
-            component={motion.div}
-            initial={{ opacity: 0, y: 20 }}
-            animate={animate}
-          >
-            <Link to="/reset-password" style={{ textDecoration: "none" }}>
-              <Button
-                fullWidth
-                size="small"
-                type="submit"
-                variant="contained"
-                style={{
-                  marginBottom: "10px",
-                  outline: "none",
-                  backgroundColor: "white",
-                  boxShadow: "none",
-                  color: "blue",
-                }}
-              >
-                reset password?
-              </Button>
-            </Link>
-          </Box> */}
         </Box>
       </Form>
     </FormikProvider>

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Typography, styled, Grid, Paper } from "@mui/material";
-import Header from "./header";
+import Header from "../header/header";
 import { Container } from "@mui/system";
-import FeeCard from "./feeCards";
-import { getStudentDetails } from "../api/api";
-import PageLoader from "./pageLoader";
+import FeeCard from "../feeCards";
+import { getStudentDetails } from "../../api/api";
+import PageLoader from "../helpers/pageLoader";
 import { useNavigate, useParams, Outlet } from "react-router-dom";
-import NoDataCard from "./noDataFound";
+import NoDataCard from "../helpers/noDataFound";
 import { useSnackbar } from "notistack";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
