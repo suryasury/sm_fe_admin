@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState } from "react";
 import { Typography, styled, Container, Link, Box } from "@mui/material";
 import { motion } from "framer-motion";

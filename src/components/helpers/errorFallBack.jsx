@@ -19,7 +19,7 @@ const ErrorFallBack = () => {
         <Typography variant="h4" color="error" align="center" gutterBottom>
           Something went wrong in this page.
         </Typography>
-        <Link to="/" style={{ textDecoration: "none" }}>
+        <Link to="/student" style={{ textDecoration: "none" }}>
           <Button variant="contained" color="primary" fullWidth>
             Go back to the home page
           </Button>

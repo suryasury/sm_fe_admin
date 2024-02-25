@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState } from "react";
 import { Typography, styled, Container, Link, Box } from "@mui/material";
 import { motion } from "framer-motion";
@@ -6,6 +5,7 @@ import { useNavigate, Navigate } from "react-router-dom";
 import { forgotPassword } from "../../api/api";
 import { useSnackbar } from "notistack";
 import ForgotPasswordForm from "./forgotPasswordForm";
+import { HandleError } from "../helpers/handleError";
 
 const RootStyle = styled("div")({
   background: "rgb(249, 250, 251)",
@@ -66,8 +66,9 @@ const ForgotPassword = () => {
       setLoading(false);
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
-        preventDuplicate: false,
+        preventDuplicate: true,
       });
+      HandleError(err);
     }
   };
 

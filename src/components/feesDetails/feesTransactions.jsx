@@ -1,116 +1,274 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Box,
-  FormControl,
+  Button,
   IconButton,
   InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
   Typography,
   styled,
+  Paper,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableBody,
+  TableCell,
+  TablePagination,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
-import { getSections, getUserDetails } from "../../api/api";
+import {
+  getAcademicYearDetails,
+  getSections,
+  getTransactionHistory,
+} from "../../api/api";
 import PageLoader from "../helpers/pageLoader";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import LayoutWrapper from "../../layout/layout";
-import DataTable from "../helpers/table";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
+import { tableCellClasses } from "@mui/material/TableCell";
+// import PersonAddIcon from "@mui/icons-material/PersonAdd";
+// import EditIcon from "@mui/icons-material/Edit";
+// import { DeleteForever } from "@mui/icons-material";
+import { Box } from "@mui/system";
+import { HandleError } from "../helpers/handleError";
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: "lightgrey",
+    color: theme.palette.common.black,
+    fontWeight: "bold",
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
 
 const RootStyle = styled("div")({});
 
 const ContainerStyle = {};
 
-const Students = () => {
+const FeesTransactions = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const term = queryParams.get("term");
-  const paymentStatus = queryParams.get("status");
   const search = queryParams.get("search");
-  const section = queryParams.get("section");
+  const currentPage = queryParams.get("page");
+  const pageLimit = queryParams.get("limit");
   const { enqueueSnackbar } = useSnackbar();
-  // const [buttonLoading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(false);
-  // const [sectionDetails, setSectionDetails] = useState([]);
-  // const [modalOpen, setModalOpen] = useState(false);
-  const [studentList, setStudentList] = useState([]);
-  const dataFetchInitRef = useRef(false);
-  const [selectedTerm, setSelectedTerm] = useState(term || "");
-  const [selectedSection, setSelectedSection] = useState(section);
-  const [selectedPaymentStatus, setSelectedPaymentStatus] = useState(
-    paymentStatus || ""
-  );
+  const [page, setPage] = useState(currentPage ? currentPage - 1 : 0);
+  const [rowsPerPage, setRowsPerPage] = useState(pageLimit || 10);
   const [searchQuery, setSearchQuery] = useState(search || "");
+  const [totalCount, setTotalCount] = useState(0);
+  const [transactionHistoryList, setTransactionHistoryList] = useState([]);
+  const section = queryParams.get("section");
+  const academicYear = queryParams.get("academicYear");
+  const term = queryParams.get("term");
+  const [selectedSection, setSelectedSection] = useState(section || "");
+  const [selectedAcademicYear, setSelectedAcademicYear] = useState(
+    academicYear || ""
+  );
+  const [selectedTerm, setSelectedTerm] = useState(term || "");
+  const [academicYearList, setAcademicYearList] = useState([]);
+  const [sectionList, setSectionList] = useState([]);
+
+  const months = {
+    1: {
+      long: "January",
+      short: "JAN",
+    },
+    2: {
+      long: "February",
+      short: "FEB",
+    },
+    3: {
+      long: "March",
+      short: "MAR",
+    },
+    4: {
+      long: "April",
+      short: "APR",
+    },
+    5: {
+      long: "May",
+      short: "MAY",
+    },
+    6: {
+      long: "June",
+      short: "JUN",
+    },
+    7: {
+      long: "July",
+      short: "JUL",
+    },
+    8: {
+      long: "August",
+      short: "AUG",
+    },
+    9: {
+      long: "September",
+      short: "SEP",
+    },
+    10: {
+      long: "October",
+      short: "OCT",
+    },
+    11: {
+      long: "November",
+      short: "NOV",
+    },
+    12: {
+      long: "December",
+      short: "DEC",
+    },
+  };
+
+  // const actionRenderer = (row) => {
+  //   return (
+  //     <>
+  //       <div style={{ display: "flex", gap: "15px" }}>
+  //         <Button
+  //           color="primary"
+  //           size="small"
+  //           variant="contained"
+  //           endIcon={<EditIcon />}
+  //           onClick={() => handleEditClick(row)}
+  //         >
+  //           Edit
+  //         </Button>
+  //         <Button
+  //           variant="outlined"
+  //           size="small"
+  //           color="error"
+  //           endIcon={<DeleteForever />}
+  //           onClick={() => handleDeleteClick(row)}
+  //         >
+  //           Delete
+  //         </Button>
+  //       </div>
+  //     </>
+  //   );
+  // };
 
   const columns = [
     {
-      id: "id",
-      label: "ID",
-      // minWidth: 100,
-    },
-    {
       id: "admissionNo",
-      label: "Admission No",
-      // minWidth: 100,
+      label: "Admn No",
     },
     {
       id: "name",
       label: "Student Name",
-      // minWidth: 100,
+    },
+    {
+      id: "term",
+      label: "Term",
     },
     {
       id: "academicYear",
       label: "Academic Year",
-      // minWidth: 100,
+    },
+    {
+      id: "standard",
+      label: "Standard",
+    },
+    {
+      id: "amount",
+      label: "Amount",
     },
     {
       id: "payedThrough",
-      label: "Payed Through",
-      // minWidth: 100,
+      label: "Payed Via",
     },
     {
       id: "paymentMethod",
-      label: "Payment Method",
-      // minWidth: 100,
+      label: "Pay Method",
     },
     {
-      id: "utrNo",
-      label: "UTR Number",
-      // minWidth: 100,
+      id: "referenceNo",
+      label: "Ref No.",
     },
     {
-      id: "date",
+      id: "paymentDate",
       label: "Payment Date",
-      // minWidth: 100,
     },
+    // {
+    //   id: "actions",
+    //   label: "Actions",
+    // },
   ];
 
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const getFeesTransactionsListService = async () => {
+    try {
+      let filters = constructQueryParams();
+      let result = await getTransactionHistory(filters);
+      setTotalCount(result?.data?.data?.count || 1);
+      let formattedArray = convertToTableData(
+        result?.data?.data.feesTransactions || []
+      );
+      setTransactionHistoryList(formattedArray);
+    } catch (err) {
+      enqueueSnackbar(err?.response?.data?.message || err.message, {
+        variant: "error",
+      });
+      HandleError(err);
+    }
+  };
 
-  const handleChangePage = (event, newPage) => {
+  const convertToTableData = (list = []) => {
+    return list.map((row) => {
+      return {
+        admissionNo: row?.fees_detail?.student?.admission_number || "NA",
+        name: row?.fees_detail?.student?.name || "NA",
+        term: row?.fees_detail?.term || "NA",
+        academicYear:
+          (months[row?.fees_detail?.academic_year?.academic_month_from].short +
+            " " +
+            row?.fees_detail?.academic_year?.academic_year_from || "NA") +
+          " - " +
+          (months[row?.fees_detail?.academic_year?.academic_month_to].short +
+            " " +
+            row?.fees_detail?.academic_year?.academic_year_to || "NA"),
+        payedThrough: row?.fees_detail?.payed_through || "NA",
+        paymentMethod: row?.payment_mode || "NA",
+        referenceNo: row?.utr_number || "NA",
+        paymentDate: row?.created_at
+          ? new Date(row?.created_at).toLocaleString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })
+          : "NA",
+        standard:
+          (row?.fees_detail?.standard?.standard || "NA") +
+          " - " +
+          (row?.fees_detail?.standard?.section || "NA"),
+        amount: "₹" + row?.amount_paid.toFixed(1),
+        // actions: actionRenderer(row),
+      };
+    });
+  };
+
+  const handleChangePage = (_, newPage) => {
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(event.target.value);
     setPage(0);
-  };
-
-  const handleFilterChange = (e) => {
-    if (e.target.name) {
-      if (e.target.name === "term") {
-        setSelectedTerm(e.target.value);
-      } else if (e.target.name === "paymentStatus") {
-        setSelectedPaymentStatus(e.target.value);
-      } else if (e.target.name === "section") {
-        setSelectedSection(e.target.value);
-      }
-    }
   };
 
   const handleSearch = (event) => {
@@ -120,33 +278,45 @@ const Students = () => {
   const handleClearSearch = () => {
     setSearchQuery("");
   };
+
+  const constructQueryParams = () => {
+    let filters = [];
+    if (searchQuery) {
+      filters.push(`search=${searchQuery}`);
+    }
+    if (selectedAcademicYear) {
+      filters.push(`academicYear=${selectedAcademicYear}`);
+    }
+    if (selectedTerm) {
+      filters.push(`term=${selectedTerm}`);
+    }
+    if (selectedSection) {
+      filters.push(`section=${selectedSection}`);
+    }
+    let currentPage = page + 1;
+    if (currentPage) {
+      filters.push(`page=${currentPage}`);
+    }
+    if (rowsPerPage) {
+      filters.push(`limit=${rowsPerPage}`);
+    }
+    let urlPath = "";
+    let queryFilters = "";
+    if (filters.length > 0) {
+      queryFilters = `?${filters.join("&")}`;
+      urlPath = `/fees-transactions${queryFilters}`;
+    } else {
+      urlPath = `/fees-transactions`;
+    }
+    navigate(urlPath, {
+      replace: true,
+    });
+    return queryFilters;
+  };
+
   useEffect(() => {
     const onPageLoad = async () => {
-      let filters = [];
-      if (selectedTerm) {
-        filters.push(`term=${selectedTerm}`);
-      }
-      if (selectedPaymentStatus) {
-        filters.push(`status=${selectedPaymentStatus}`);
-      }
-      if (selectedSection) {
-        filters.push(`section=${selectedSection}`);
-      }
-      if (searchQuery) {
-        filters.push(`search=${searchQuery}`);
-      }
-      let urlPath = "";
-      let queryFilters = "";
-      if (filters.length > 0) {
-        queryFilters = `?${filters.join("&")}`;
-        urlPath = `/fees-transactions${queryFilters}`;
-      } else {
-        urlPath = `/fees-transactions`;
-      }
-      // await getStudentListService(queryFilters);
-      navigate(urlPath, {
-        replace: true,
-      });
+      await getFeesTransactionsListService();
     };
     if (document.readyState === "complete") {
       onPageLoad();
@@ -154,11 +324,74 @@ const Students = () => {
       window.addEventListener("load", onPageLoad, false);
       return () => window.removeEventListener("load", onPageLoad);
     }
-  }, [selectedTerm, selectedPaymentStatus, searchQuery, selectedSection]);
+  }, [
+    page,
+    rowsPerPage,
+    searchQuery,
+    selectedTerm,
+    selectedAcademicYear,
+    selectedSection,
+  ]);
 
-  // const handleOnSectionClick = (sectionId) => {
-  //   navigate(`/student/list/${sectionId}`);
-  // };
+  const getAcademicYearListService = async () => {
+    try {
+      let result = await getAcademicYearDetails();
+      result = result.data;
+      setAcademicYearList(result?.data || []);
+    } catch (err) {
+      enqueueSnackbar(err?.response?.data?.message || err.message, {
+        variant: "error",
+      });
+      HandleError(err);
+    }
+  };
+
+  const getSectionListService = async () => {
+    try {
+      let result = await getSections();
+      result = result.data;
+      setSectionList(result.data);
+    } catch (err) {
+      console.log(err);
+      enqueueSnackbar(err?.response?.data?.message || err.message, {
+        variant: "error",
+      });
+      HandleError(err);
+    }
+  };
+
+  useEffect(() => {
+    const onPageLoadMenus = async () => {
+      await getAcademicYearListService();
+      await getSectionListService();
+    };
+    if (document.readyState === "complete") {
+      onPageLoadMenus();
+    } else {
+      window.addEventListener("load", onPageLoadMenus, false);
+      return () => window.removeEventListener("load", onPageLoadMenus);
+    }
+  }, []);
+
+  const handleFilterChange = (e) => {
+    if (e.target.name) {
+      if (e.target.name === "section") {
+        setSelectedSection(e.target.value);
+      } else if (e.target.name === "academicYear") {
+        setSelectedAcademicYear(e.target.value);
+      } else if (e.target.name === "term") {
+        setSelectedTerm(e.target.value);
+      }
+    }
+  };
+
+  const handleClearFilter = () => {
+    setSearchQuery("");
+    setSelectedSection("");
+    setSelectedAcademicYear("");
+    setSelectedTerm("");
+  };
+
   return (
     <LayoutWrapper>
       <RootStyle>
@@ -169,7 +402,11 @@ const Students = () => {
             <div style={{ margin: "30px", ...ContainerStyle }}>
               <Typography
                 variant="h4"
-                style={{ opacity: "0.7", fontWeight: "bolder" }}
+                style={{
+                  opacity: "0.7",
+                  fontWeight: "bolder",
+                  marginBottom: "20px",
+                }}
               >
                 Fees Transactions
               </Typography>
@@ -177,112 +414,210 @@ const Students = () => {
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  margin: "20px 0 20px 0",
+                  justifyContent: "space-between",
                 }}
               >
-                <Box>
-                  <FormControl size="small" style={{ width: "100px" }}>
-                    <InputLabel id="beautiful-dropdown-label">Term</InputLabel>
-                    <Select
-                      labelId="beautiful-dropdown-label"
-                      id="beautiful-dropdown"
-                      value={selectedTerm}
-                      onChange={handleFilterChange}
-                      label="Term"
-                      name="term"
-                    >
-                      <MenuItem value="">
-                        <em>All</em>
-                      </MenuItem>
-                      <MenuItem value={"1"}>One</MenuItem>
-                      <MenuItem value={"2"}>Two</MenuItem>
-                      <MenuItem value={"3"}>Three</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Box>
-                <Box>
-                  <FormControl
-                    size="small"
-                    style={{ width: "160px", marginLeft: "15px" }}
-                  >
-                    <InputLabel id="beautiful-dropdown-label">
-                      Payment Status
-                    </InputLabel>
-                    <Select
-                      labelId="beautiful-dropdown-label"
-                      id="beautiful-dropdown"
-                      value={selectedPaymentStatus}
-                      onChange={handleFilterChange}
-                      label="Payment Status"
-                      name="paymentStatus"
-                    >
-                      <MenuItem value="">
-                        <em>All</em>
-                      </MenuItem>
-                      <MenuItem value="paid">Paid</MenuItem>
-                      <MenuItem value="unpaid">Unpaid</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Box>
-                <Box>
-                  <FormControl
-                    size="small"
-                    style={{ width: "200px", marginLeft: "15px" }}
-                  >
-                    <InputLabel id="beautiful-dropdown-label">
-                      Standard & Section
-                    </InputLabel>
-                    <Select
-                      labelId="beautiful-dropdown-label"
-                      id="beautiful-dropdown"
-                      value={selectedSection}
-                      onChange={handleFilterChange}
-                      label="Standard & Section"
-                      name="section"
-                    >
-                      <MenuItem value="">
-                        <em>All</em>
-                      </MenuItem>
-                      <MenuItem value={1}>Section1</MenuItem>
-                      <MenuItem value={2}>section2</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Box>
-                <TextField
-                  label="Admn No / Student name"
-                  variant="outlined"
-                  size="small"
+                <div
                   style={{
-                    maxWidth: "300px",
-                    width: "100%",
-                    marginLeft: "20px",
+                    display: "flex",
+                    alignItems: "center",
                   }}
-                  value={searchQuery}
-                  onChange={handleSearch}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        {searchQuery && (
-                          <IconButton edge="end" onClick={handleClearSearch}>
-                            <ClearIcon />
+                >
+                  <TextField
+                    label="Name or Admn No"
+                    variant="outlined"
+                    size="small"
+                    style={{
+                      // maxWidth: "450px",
+                      width: "25%",
+                      // marginLeft: "20px",
+                    }}
+                    value={searchQuery}
+                    onChange={handleSearch}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          {searchQuery && (
+                            <IconButton edge="end" onClick={handleClearSearch}>
+                              <ClearIcon />
+                            </IconButton>
+                          )}
+                          <IconButton edge="end" disabled={!searchQuery}>
+                            <SearchIcon />
                           </IconButton>
-                        )}
-                        <IconButton edge="end" disabled={!searchQuery}>
-                          <SearchIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <Box>
+                    <FormControl
+                      size="small"
+                      style={{ width: "210px", marginLeft: "15px" }}
+                    >
+                      <InputLabel id="beautiful-dropdown-label">
+                        Academic Year
+                      </InputLabel>
+                      <Select
+                        labelId="beautiful-dropdown-label"
+                        id="beautiful-dropdown"
+                        value={selectedAcademicYear}
+                        onChange={handleFilterChange}
+                        label="Academic Year"
+                        name="academicYear"
+                      >
+                        <MenuItem value="">
+                          <em>All</em>
+                        </MenuItem>
+                        {academicYearList.map((academicYear) => (
+                          <MenuItem
+                            value={academicYear.id.toString()}
+                            key={academicYear.id}
+                          >
+                            {months[academicYear.academic_month_from].short}{" "}
+                            {academicYear.academic_year_from} -{" "}
+                            {months[academicYear.academic_month_to].short}{" "}
+                            {academicYear.academic_year_to}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
+                  <Box>
+                    <FormControl
+                      size="small"
+                      style={{ width: "140px", marginLeft: "15px" }}
+                    >
+                      <InputLabel id="beautiful-dropdown-label">
+                        Term
+                      </InputLabel>
+                      <Select
+                        labelId="beautiful-dropdown-label"
+                        id="beautiful-dropdown"
+                        value={selectedTerm}
+                        onChange={handleFilterChange}
+                        label="Term"
+                        name="term"
+                      >
+                        <MenuItem value="">All</MenuItem>
+                        <MenuItem value={"1"}>Term One</MenuItem>
+                        <MenuItem value={"2"}>Term Two</MenuItem>
+                        <MenuItem value={"3"}>Term Three</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
+                  <Box>
+                    <FormControl
+                      size="small"
+                      style={{ width: "200px", marginLeft: "15px" }}
+                    >
+                      <InputLabel id="beautiful-dropdown-label">
+                        Standard & Section
+                      </InputLabel>
+                      <Select
+                        labelId="beautiful-dropdown-label"
+                        id="beautiful-dropdown"
+                        value={selectedSection}
+                        onChange={handleFilterChange}
+                        label="Standard & Section"
+                        name="section"
+                      >
+                        <MenuItem value="">
+                          <em>All</em>
+                        </MenuItem>
+                        {sectionList.map((section) => (
+                          <MenuItem
+                            value={section.id.toString()}
+                            key={section.id}
+                          >
+                            {section.standard} - {section.section}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
+                  <div style={{ width: "200px" }}>
+                    <Button
+                      style={{ marginLeft: "15px" }}
+                      onClick={handleClearFilter}
+                    >
+                      Clear Filter
+                    </Button>
+                  </div>
+                </div>
+                {/* <div>
+                    <Button
+                      variant="contained"
+                      endIcon={<PersonAddIcon />}
+                      onClick={() => {
+                        setOpenAddAdminModal(!openAddAdminModal);
+                      }}
+                    >
+                      Add Admin
+                    </Button>
+                  </div> */}
               </div>
-              <DataTable
-                rows={studentList}
-                columns={columns}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                handleChangePage={handleChangePage}
-                handleChangeRowsPerPage={handleChangeRowsPerPage}
-              />
+              <Paper
+                sx={{ width: "100%", overflow: "hidden", marginTop: "30px" }}
+              >
+                <TableContainer sx={{ maxHeight: 700 }}>
+                  <Table stickyHeader aria-label="sticky table">
+                    <TableHead>
+                      <TableRow>
+                        {columns.map((column) => (
+                          <StyledTableCell
+                            key={column.id}
+                            align={column.align}
+                            style={{ minWidth: column.minWidth }}
+                          >
+                            {column.label}
+                          </StyledTableCell>
+                        ))}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {transactionHistoryList.length === 0 ? (
+                        <TableRow style={{ height: "300px" }}>
+                          <TableCell colSpan={columns.length} align="center">
+                            No Data Found
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        transactionHistoryList.map((row) => {
+                          return (
+                            <StyledTableRow
+                              hover
+                              role="checkbox"
+                              tabIndex={-1}
+                              key={row.admissionNo}
+                            >
+                              {columns.map((column) => {
+                                const value = row[column.id];
+                                return (
+                                  <StyledTableCell
+                                    key={column.id}
+                                    align={column.align}
+                                  >
+                                    {value}
+                                  </StyledTableCell>
+                                );
+                              })}
+                            </StyledTableRow>
+                          );
+                        })
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[10, 25, 100]}
+                  component="div"
+                  count={totalCount}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </Paper>
             </div>
           </>
         )}
@@ -291,4 +626,4 @@ const Students = () => {
   );
 };
 
-export default Students;
+export default FeesTransactions;

@@ -16,7 +16,7 @@ const SideMenu = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("");
 
-  const listItem = [
+  const sideMenuItems = [
     {
       title: "Students",
       logo: <SchoolIcon />,
@@ -52,7 +52,9 @@ const SideMenu = () => {
   useEffect(() => {
     if (!activeTab) {
       let path = window.location.pathname;
-      let currentPageItem = listItem.find((item) => path.includes(item.link));
+      let currentPageItem = sideMenuItems.find((item) =>
+        path.includes(item.link)
+      );
       setActiveTab(currentPageItem?.id || "");
     }
   }, []);
@@ -75,7 +77,7 @@ const SideMenu = () => {
           <h2 style={{ fontWeight: "lighter" }}>Admin portal</h2>
         </div>
         <List>
-          {listItem.map((item, index) => (
+          {sideMenuItems.map((item, index) => (
             <ListItem
               button
               key={index}

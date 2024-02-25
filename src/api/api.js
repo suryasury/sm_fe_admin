@@ -37,7 +37,7 @@ export const getUserDetails = async () => {
 
 export const getSections = async () => {
   try {
-    let result = await axios.get(`${apiUrl}/api/teachers/dashboard/sections`, {
+    let result = await axios.get(`${apiUrl}/api/admin/standard/list/minified`, {
       headers: {
         Authorization: getAuthToken(),
       },
@@ -127,6 +127,357 @@ export const resetPassword = async (password, token) => {
 export const passwordReset = async (body) => {
   try {
     let result = await axios.patch(`${apiUrl}/api/admin/password/reset`, body, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const masterUploadStudents = async (formData) => {
+  try {
+    let result = await axios.post(
+      `${apiUrl}/api/admin/master/upload/student`,
+      formData,
+      {
+        headers: {
+          Authorization: getAuthToken(),
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const deleteStudent = async (id) => {
+  try {
+    let result = await axios.patch(
+      `${apiUrl}/api/admin/student/delete/${id}`,
+      {},
+      {
+        headers: {
+          Authorization: getAuthToken(),
+        },
+      }
+    );
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const recordOfflineFees = async (body) => {
+  try {
+    let result = await axios.post(
+      `${apiUrl}/api/admin/record-fees/offline`,
+      body,
+      {
+        headers: {
+          Authorization: getAuthToken(),
+        },
+      }
+    );
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const createStudent = async (body) => {
+  try {
+    let result = await axios.post(`${apiUrl}/api/admin/student/create`, body, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const updateStudentDetails = async (body) => {
+  try {
+    let result = await axios.post(`${apiUrl}/api/admin/student/update`, body, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const createFeesDetails = async (body) => {
+  try {
+    let result = await axios.post(
+      `${apiUrl}/api/admin/student/fees/create`,
+      body,
+      {
+        headers: {
+          Authorization: getAuthToken(),
+        },
+      }
+    );
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const updateFeesDetails = async (body) => {
+  try {
+    let result = await axios.post(
+      `${apiUrl}/api/admin/student/fees/update`,
+      body,
+      {
+        headers: {
+          Authorization: getAuthToken(),
+        },
+      }
+    );
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const deleteFeesDetails = async (id) => {
+  try {
+    let result = await axios.delete(
+      `${apiUrl}/api/admin/student/fees/delete/${id}`,
+      {
+        headers: {
+          Authorization: getAuthToken(),
+        },
+      }
+    );
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const getTeacherList = async (filters) => {
+  try {
+    let result = await axios.get(`${apiUrl}/api/admin/staffs/list${filters}`, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const getTeacherListMinified = async () => {
+  try {
+    let result = await axios.get(`${apiUrl}/api/admin/staffs/list/minified`, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const createTeacher = async (body) => {
+  try {
+    let result = await axios.post(`${apiUrl}/api/admin/create-staffs`, body, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const updateTeacher = async (body) => {
+  try {
+    let result = await axios.post(`${apiUrl}/api/admin/staffs/update`, body, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+export const deleteTeacher = async (id) => {
+  try {
+    let result = await axios.delete(`${apiUrl}/api/admin/staffs/delete/${id}`, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const getStandardList = async (filters) => {
+  try {
+    let result = await axios.get(
+      `${apiUrl}/api/admin/standard/list${filters}`,
+      {
+        headers: {
+          Authorization: getAuthToken(),
+        },
+      }
+    );
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const createNewStandard = async (body) => {
+  try {
+    let result = await axios.post(`${apiUrl}/api/admin/standard/create`, body, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const reassignStandardStaff = async (body) => {
+  try {
+    let result = await axios.post(`${apiUrl}/api/admin/standard/update`, body, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const getAdminList = async (filter) => {
+  try {
+    let result = await axios.get(`${apiUrl}/api/admin/list${filter}`, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const createAdmin = async (body) => {
+  try {
+    let result = await axios.post(`${apiUrl}/api/admin/create`, body, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const getAdminDetails = async () => {
+  try {
+    let result = await axios.get(`${apiUrl}/api/admin/details`, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const updateAdminDetails = async (body) => {
+  try {
+    let result = await axios.post(`${apiUrl}/api/admin/update`, body, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const deleteAdmin = async (id) => {
+  try {
+    let result = await axios.delete(`${apiUrl}/api/admin/delete/${id}`, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const getTransactionHistory = async (filter) => {
+  try {
+    let result = await axios.get(
+      `${apiUrl}/api/admin/fees/transactions/history${filter}`,
+      {
+        headers: {
+          Authorization: getAuthToken(),
+        },
+      }
+    );
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const getAcademicYearDetails = async () => {
+  try {
+    let result = await axios.get(`${apiUrl}/api/admin/academic-year`, {
       headers: {
         Authorization: getAuthToken(),
       },

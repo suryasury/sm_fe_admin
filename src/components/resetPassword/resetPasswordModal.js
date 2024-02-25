@@ -15,6 +15,7 @@ import { LoadingButton } from "@mui/lab";
 import { passwordReset } from "../../api/api";
 import { useSnackbar } from "notistack";
 import { Icon } from "@iconify/react";
+import { HandleError } from "../helpers/handleError";
 
 const ResetPasswordModal = ({ open, handleClose }) => {
   const [newPassword, setNewPassword] = useState("");
@@ -37,9 +38,9 @@ const ResetPasswordModal = ({ open, handleClose }) => {
       handleClose();
       enqueueSnackbar("Password resetted successfully", { variant: "success" });
     } catch (err) {
-      console.log("error", err);
       setLoading(false);
       setError(err?.response?.data?.message || "");
+      HandleError(err);
     }
   };
 

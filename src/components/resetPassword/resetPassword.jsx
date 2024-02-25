@@ -55,8 +55,7 @@ const ResetPassword = () => {
   const handleSubmit = async (password) => {
     try {
       setLoading(true);
-      let response = await resetPassword(password, token);
-      response = response.data;
+      await resetPassword(password, token);
       setLoading(false);
       navigation("/password/reset/success");
     } catch (err) {

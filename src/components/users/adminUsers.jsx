@@ -1,81 +1,174 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Box,
-  FormControl,
+  Button,
   IconButton,
   InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
   Typography,
   styled,
+  Paper,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableBody,
+  TableCell,
+  TablePagination,
 } from "@mui/material";
-import { getSections, getUserDetails } from "../../api/api";
+import {
+  createAdmin,
+  deleteAdmin,
+  getAdminList,
+  updateAdminDetails,
+} from "../../api/api";
 import PageLoader from "../helpers/pageLoader";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import LayoutWrapper from "../../layout/layout";
-import DataTable from "../helpers/table";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
+import { tableCellClasses } from "@mui/material/TableCell";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import EditIcon from "@mui/icons-material/Edit";
+import { DeleteForever } from "@mui/icons-material";
+import AddAdminModal from "./addAdminModal";
+import EditAdminModal from "./editAdminModal";
+import DeleteConfirmationModal from "./confirmationModal";
+import { HandleError } from "../helpers/handleError";
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: "lightgrey",
+    color: theme.palette.common.black,
+    fontWeight: "bold",
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
 
 const RootStyle = styled("div")({});
 
 const ContainerStyle = {};
 
-const Students = () => {
+const AdminUsers = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const term = queryParams.get("term");
-  const paymentStatus = queryParams.get("status");
   const search = queryParams.get("search");
-  const section = queryParams.get("section");
+  const currentPage = queryParams.get("page");
+  const pageLimit = queryParams.get("limit");
   const { enqueueSnackbar } = useSnackbar();
-  // const [buttonLoading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(false);
-  // const [sectionDetails, setSectionDetails] = useState([]);
-  // const [modalOpen, setModalOpen] = useState(false);
-  const [studentList, setStudentList] = useState([]);
-  const dataFetchInitRef = useRef(false);
-  const [selectedTerm, setSelectedTerm] = useState(term || "");
-  const [selectedSection, setSelectedSection] = useState(section);
-  const [selectedPaymentStatus, setSelectedPaymentStatus] = useState(
-    paymentStatus || ""
-  );
+  const [page, setPage] = useState(currentPage ? currentPage - 1 : 0);
+  const [rowsPerPage, setRowsPerPage] = useState(pageLimit || 10);
   const [searchQuery, setSearchQuery] = useState(search || "");
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState({});
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [editData, setEditData] = useState(null);
+  const [adminList, setAdminList] = useState([]);
+  const [openAddAdminModal, setOpenAddAdminModal] = useState(false);
+
+  const handleDeleteClick = (row) => {
+    setSelectedRowData(row);
+    setOpenConfirmationModal(true);
+  };
+  const handleEditClick = (row) => {
+    setEditData(row);
+    setOpenEditModal(true);
+  };
+
+  const actionRenderer = (row) => {
+    return (
+      <>
+        <div style={{ display: "flex", gap: "15px" }}>
+          <Button
+            color="primary"
+            size="small"
+            variant="contained"
+            endIcon={<EditIcon />}
+            onClick={() => handleEditClick(row)}
+          >
+            Edit
+          </Button>
+          <Button
+            variant="outlined"
+            size="small"
+            color="error"
+            endIcon={<DeleteForever />}
+            onClick={() => handleDeleteClick(row)}
+          >
+            Delete
+          </Button>
+        </div>
+      </>
+    );
+  };
 
   const columns = [
     {
       id: "id",
       label: "ID",
-      // minWidth: 100,
     },
     {
       id: "name",
       label: "Name",
-      // minWidth: 100,
     },
     {
       id: "email",
       label: "Email Id",
-      // minWidth: 100,
     },
     {
       id: "mobileNumber",
       label: "Mobile Number",
-      // minWidth: 100,
     },
     {
       id: "actions",
       label: "Actions",
-      // minWidth: 100,
     },
   ];
 
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const getAdminListService = async () => {
+    try {
+      let filters = constructQueryParams();
+      let result = await getAdminList(filters);
+      setTotalCount(result?.data?.data?.count || 1);
+      let formattedArray = convertToTableData(
+        result?.data?.data.adminList || []
+      );
+      setAdminList(formattedArray);
+    } catch (err) {
+      console.log(err);
+      enqueueSnackbar(err?.response?.data?.message || err.message, {
+        variant: "error",
+      });
+      HandleError(err);
+    }
+  };
+
+  const convertToTableData = (list = []) => {
+    return list.map((row) => {
+      return {
+        id: row.id,
+        name: row.name,
+        email: row.email,
+        mobileNumber: row.mobileNumber,
+        actions: actionRenderer(row),
+      };
+    });
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -86,18 +179,6 @@ const Students = () => {
     setPage(0);
   };
 
-  const handleFilterChange = (e) => {
-    if (e.target.name) {
-      if (e.target.name === "term") {
-        setSelectedTerm(e.target.value);
-      } else if (e.target.name === "paymentStatus") {
-        setSelectedPaymentStatus(e.target.value);
-      } else if (e.target.name === "section") {
-        setSelectedSection(e.target.value);
-      }
-    }
-  };
-
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
   };
@@ -105,33 +186,36 @@ const Students = () => {
   const handleClearSearch = () => {
     setSearchQuery("");
   };
+
+  const constructQueryParams = () => {
+    let filters = [];
+    if (searchQuery) {
+      filters.push(`search=${searchQuery}`);
+    }
+    let currentPage = page + 1;
+    if (currentPage) {
+      filters.push(`page=${currentPage}`);
+    }
+    if (rowsPerPage) {
+      filters.push(`limit=${rowsPerPage}`);
+    }
+    let urlPath = "";
+    let queryFilters = "";
+    if (filters.length > 0) {
+      queryFilters = `?${filters.join("&")}`;
+      urlPath = `/users${queryFilters}`;
+    } else {
+      urlPath = `/users`;
+    }
+    navigate(urlPath, {
+      replace: true,
+    });
+    return queryFilters;
+  };
+
   useEffect(() => {
     const onPageLoad = async () => {
-      let filters = [];
-      if (selectedTerm) {
-        filters.push(`term=${selectedTerm}`);
-      }
-      if (selectedPaymentStatus) {
-        filters.push(`status=${selectedPaymentStatus}`);
-      }
-      if (selectedSection) {
-        filters.push(`section=${selectedSection}`);
-      }
-      if (searchQuery) {
-        filters.push(`search=${searchQuery}`);
-      }
-      let urlPath = "";
-      let queryFilters = "";
-      if (filters.length > 0) {
-        queryFilters = `?${filters.join("&")}`;
-        urlPath = `/users${queryFilters}`;
-      } else {
-        urlPath = `/users`;
-      }
-      // await getStudentListService(queryFilters);
-      navigate(urlPath, {
-        replace: true,
-      });
+      await getAdminListService();
     };
     if (document.readyState === "complete") {
       onPageLoad();
@@ -139,11 +223,68 @@ const Students = () => {
       window.addEventListener("load", onPageLoad, false);
       return () => window.removeEventListener("load", onPageLoad);
     }
-  }, [selectedTerm, selectedPaymentStatus, searchQuery, selectedSection]);
+  }, [searchQuery, page, rowsPerPage]);
 
-  // const handleOnSectionClick = (sectionId) => {
-  //   navigate(`/student/list/${sectionId}`);
-  // };
+  const handleConfirmDelete = async (id) => {
+    try {
+      setLoading(true);
+      let response = await deleteAdmin(id);
+      response = response.data;
+      enqueueSnackbar(response.message, { variant: "success" });
+      await getAdminListService();
+      setLoading(false);
+      setOpenConfirmationModal(false);
+    } catch (err) {
+      setLoading(false);
+      enqueueSnackbar(err?.response?.data?.message || err.message, {
+        variant: "error",
+      });
+      HandleError(err);
+    }
+  };
+
+  const handleSubmitData = async (formData, resetForm) => {
+    try {
+      setLoading(true);
+      let response = await createAdmin(formData);
+      response = response.data;
+      enqueueSnackbar(response.message, { variant: "success" });
+      await getAdminListService();
+      setLoading(false);
+      setOpenAddAdminModal(false);
+      resetForm.resetForm();
+    } catch (err) {
+      setLoading(false);
+      enqueueSnackbar(err?.response?.data?.message || err.message, {
+        variant: "error",
+      });
+      HandleError(err);
+    }
+  };
+
+  const handleSubmitEdit = async (formData, resetForm) => {
+    try {
+      setLoading(true);
+      let response = await updateAdminDetails(formData);
+      response = response.data;
+      enqueueSnackbar(response.message, { variant: "success" });
+      await getAdminListService();
+      setLoading(false);
+      setOpenEditModal(false);
+      setEditData(null);
+      resetForm.resetForm();
+    } catch (err) {
+      setLoading(false);
+      enqueueSnackbar(err?.response?.data?.message || err.message, {
+        variant: "error",
+      });
+      HandleError(err);
+    }
+  };
+
+  const handleClearFilter = () => {
+    setSearchQuery("");
+  };
   return (
     <LayoutWrapper>
       <RootStyle>
@@ -151,126 +292,172 @@ const Students = () => {
           <PageLoader />
         ) : (
           <>
-            <div
-              // maxWidth="sm"
-              style={{ margin: "30px", ...ContainerStyle }}
-            >
+            <div style={{ margin: "30px", ...ContainerStyle }}>
               <Typography
                 variant="h4"
-                style={{ opacity: "0.7", fontWeight: "bolder" }}
+                style={{
+                  opacity: "0.7",
+                  fontWeight: "bolder",
+                  marginBottom: "20px",
+                }}
               >
-                Admin Uers
+                Admin Users
               </Typography>
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  margin: "20px 0 20px 0",
+                  justifyContent: "space-between",
                 }}
               >
-                <Box>
-                  <FormControl size="small" style={{ width: "100px" }}>
-                    <InputLabel id="beautiful-dropdown-label">Term</InputLabel>
-                    <Select
-                      labelId="beautiful-dropdown-label"
-                      id="beautiful-dropdown"
-                      value={selectedTerm}
-                      onChange={handleFilterChange}
-                      label="Term"
-                      name="term"
-                    >
-                      <MenuItem value="">
-                        <em>All</em>
-                      </MenuItem>
-                      <MenuItem value={"1"}>One</MenuItem>
-                      <MenuItem value={"2"}>Two</MenuItem>
-                      <MenuItem value={"3"}>Three</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Box>
-                <Box>
-                  <FormControl
-                    size="small"
-                    style={{ width: "160px", marginLeft: "15px" }}
-                  >
-                    <InputLabel id="beautiful-dropdown-label">
-                      Payment Status
-                    </InputLabel>
-                    <Select
-                      labelId="beautiful-dropdown-label"
-                      id="beautiful-dropdown"
-                      value={selectedPaymentStatus}
-                      onChange={handleFilterChange}
-                      label="Payment Status"
-                      name="paymentStatus"
-                    >
-                      <MenuItem value="">
-                        <em>All</em>
-                      </MenuItem>
-                      <MenuItem value="paid">Paid</MenuItem>
-                      <MenuItem value="unpaid">Unpaid</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Box>
-                <Box>
-                  <FormControl
-                    size="small"
-                    style={{ width: "200px", marginLeft: "15px" }}
-                  >
-                    <InputLabel id="beautiful-dropdown-label">
-                      Standard & Section
-                    </InputLabel>
-                    <Select
-                      labelId="beautiful-dropdown-label"
-                      id="beautiful-dropdown"
-                      value={selectedSection}
-                      onChange={handleFilterChange}
-                      label="Standard & Section"
-                      name="section"
-                    >
-                      <MenuItem value="">
-                        <em>All</em>
-                      </MenuItem>
-                      <MenuItem value={1}>Section1</MenuItem>
-                      <MenuItem value={2}>section2</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Box>
-                <TextField
-                  label="Admn No / Student name"
-                  variant="outlined"
-                  size="small"
+                <div
                   style={{
-                    maxWidth: "300px",
-                    width: "100%",
-                    marginLeft: "20px",
+                    display: "flex",
+                    alignItems: "center",
                   }}
-                  value={searchQuery}
-                  onChange={handleSearch}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        {searchQuery && (
-                          <IconButton edge="end" onClick={handleClearSearch}>
-                            <ClearIcon />
+                >
+                  <TextField
+                    label="Admin name or email"
+                    variant="outlined"
+                    size="small"
+                    style={{
+                      maxWidth: "450px",
+                      width: "100%",
+                    }}
+                    value={searchQuery}
+                    onChange={handleSearch}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          {searchQuery && (
+                            <IconButton edge="end" onClick={handleClearSearch}>
+                              <ClearIcon />
+                            </IconButton>
+                          )}
+                          <IconButton edge="end" disabled={!searchQuery}>
+                            <SearchIcon />
                           </IconButton>
-                        )}
-                        <IconButton edge="end" disabled={!searchQuery}>
-                          <SearchIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <div style={{ width: "300px" }}>
+                    <Button
+                      style={{ marginLeft: "20px" }}
+                      onClick={handleClearFilter}
+                    >
+                      Clear Filter
+                    </Button>
+                  </div>
+                </div>
+                <div>
+                  <Button
+                    variant="contained"
+                    endIcon={<PersonAddIcon />}
+                    onClick={() => {
+                      setOpenAddAdminModal(!openAddAdminModal);
+                    }}
+                  >
+                    Add Admin
+                  </Button>
+                </div>
               </div>
-              <DataTable
-                rows={studentList}
-                columns={columns}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                handleChangePage={handleChangePage}
-                handleChangeRowsPerPage={handleChangeRowsPerPage}
+              <Paper
+                sx={{ width: "100%", overflow: "hidden", marginTop: "30px" }}
+              >
+                <TableContainer sx={{ maxHeight: 700 }}>
+                  <Table stickyHeader aria-label="sticky table">
+                    {/* <caption>A basic table example with a caption</caption> */}
+                    <TableHead>
+                      <TableRow>
+                        {columns.map((column) => (
+                          <StyledTableCell
+                            key={column.id}
+                            align={column.align}
+                            style={{ minWidth: column.minWidth }}
+                          >
+                            {column.label}
+                          </StyledTableCell>
+                        ))}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {adminList.length === 0 ? (
+                        <TableRow style={{ height: "300px" }}>
+                          <TableCell colSpan={columns.length} align="center">
+                            No Data Found
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        adminList.map((row) => {
+                          return (
+                            <StyledTableRow
+                              hover
+                              role="checkbox"
+                              tabIndex={-1}
+                              key={row.admissionNo}
+                            >
+                              {columns.map((column) => {
+                                const value = row[column.id];
+                                return (
+                                  <StyledTableCell
+                                    key={column.id}
+                                    align={column.align}
+                                  >
+                                    {value}
+                                  </StyledTableCell>
+                                );
+                              })}
+                            </StyledTableRow>
+                          );
+                        })
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[10, 25, 100]}
+                  component="div"
+                  count={totalCount}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </Paper>
+              <DeleteConfirmationModal
+                open={openConfirmationModal}
+                handleClose={() => {
+                  setOpenConfirmationModal(false);
+                  setSelectedRowData(null);
+                  setLoading(false);
+                }}
+                handleConfirm={handleConfirmDelete}
+                email={selectedRowData?.email}
+                name={selectedRowData?.name}
+                loading={loading}
+                id={selectedRowData?.id || ""}
               />
+              <AddAdminModal
+                open={openAddAdminModal}
+                handleClose={() => {
+                  setOpenAddAdminModal(false);
+                }}
+                handleSubmitData={handleSubmitData}
+                loading={loading}
+              />
+              {editData && (
+                <EditAdminModal
+                  open={openEditModal}
+                  handleClose={() => {
+                    setEditData(null);
+                    setOpenEditModal(false);
+                  }}
+                  handleSubmitData={handleSubmitEdit}
+                  loading={loading}
+                  adminDetails={editData}
+                />
+              )}
             </div>
           </>
         )}
@@ -279,4 +466,4 @@ const Students = () => {
   );
 };
 
-export default Students;
+export default AdminUsers;
