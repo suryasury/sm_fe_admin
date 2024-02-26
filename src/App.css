@@ -1,15 +1,22 @@
-.css-12i7wg6-MuiPaper-root-MuiDrawer-paper {
+/* .css-12i7wg6-MuiPaper-root-MuiDrawer-paper {
   margin-top: 90px;
 }
-
+.css-1l8j5k8 {
+  margin-top: 90px !important;
+} */
 .drawerPaper {
   width: 240px;
   flex-shrink: 0;
   border-right: 1px solid grey;
+  margin-top: 90px;
 }
 
 .activeMenuItem {
   background-color: rgb(225, 225, 225);
+}
+
+.date-range-selector-custom:hover {
+  color: brown;
 }
 
 input::-webkit-outer-spin-button,

@@ -43,6 +43,7 @@ import AddTeacherModal from "./addTeacherModal";
 import EditTeacherModal from "./editTeacherModal";
 import DeleteConfirmationModal from "./confirmationModal";
 import { HandleError } from "../helpers/handleError";
+import TableLoader from "../helpers/tableLoader";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -157,6 +158,7 @@ const Teachers = () => {
 
   const getTeacherListService = async () => {
     try {
+      setPageLoading(true);
       let filters = constructQueryParams();
       let result = await getTeacherList(filters);
       setTotalCount(result?.data?.data?.count || 1);
@@ -164,12 +166,13 @@ const Teachers = () => {
         result?.data?.data.teachersList || []
       );
       setTeachersList(formattedArray);
+      setPageLoading(false);
     } catch (err) {
-      console.log(err);
+      setPageLoading(false);
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -304,7 +307,7 @@ const Teachers = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -323,7 +326,7 @@ const Teachers = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -343,7 +346,7 @@ const Teachers = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -354,7 +357,7 @@ const Teachers = () => {
   return (
     <LayoutWrapper>
       <RootStyle>
-        {pageLoading ? (
+        {false ? (
           <PageLoader />
         ) : (
           <>
@@ -362,7 +365,7 @@ const Teachers = () => {
               <Typography
                 variant="h4"
                 style={{
-                  opacity: "0.7",
+                  opacity: "0.6",
                   fontWeight: "bolder",
                   marginBottom: "20px",
                 }}
@@ -475,35 +478,48 @@ const Teachers = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {teachersList.length === 0 ? (
+                      {pageLoading ? (
                         <TableRow style={{ height: "300px" }}>
                           <TableCell colSpan={columns.length} align="center">
-                            No Data Found
+                            <TableLoader />
                           </TableCell>
                         </TableRow>
                       ) : (
-                        teachersList.map((row) => {
-                          return (
-                            <StyledTableRow
-                              hover
-                              role="checkbox"
-                              tabIndex={-1}
-                              key={row.admissionNo}
-                            >
-                              {columns.map((column) => {
-                                const value = row[column.id];
-                                return (
-                                  <StyledTableCell
-                                    key={column.id}
-                                    align={column.align}
-                                  >
-                                    {value}
-                                  </StyledTableCell>
-                                );
-                              })}
-                            </StyledTableRow>
-                          );
-                        })
+                        <>
+                          {teachersList.length === 0 ? (
+                            <TableRow style={{ height: "300px" }}>
+                              <TableCell
+                                colSpan={columns.length}
+                                align="center"
+                              >
+                                No Data Found
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            teachersList.map((row) => {
+                              return (
+                                <StyledTableRow
+                                  hover
+                                  role="checkbox"
+                                  tabIndex={-1}
+                                  key={row.admissionNo}
+                                >
+                                  {columns.map((column) => {
+                                    const value = row[column.id];
+                                    return (
+                                      <StyledTableCell
+                                        key={column.id}
+                                        align={column.align}
+                                      >
+                                        {value}
+                                      </StyledTableCell>
+                                    );
+                                  })}
+                                </StyledTableRow>
+                              );
+                            })
+                          )}
+                        </>
                       )}
                     </TableBody>
                   </Table>

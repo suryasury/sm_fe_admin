@@ -19,8 +19,10 @@ import { LoadingButton } from "@mui/lab";
 import { recordOfflineFees } from "../../api/api";
 import { useSnackbar } from "notistack";
 import { HandleError } from "../helpers/handleError";
+import { useNavigate } from "react-router-dom";
 
 const RecordFeesModal = ({ open, handleClose, feesDetails }) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const [paymentMode, setPaymentMode] = useState("CASH");
@@ -45,7 +47,7 @@ const RecordFeesModal = ({ open, handleClose, feesDetails }) => {
         variant: "error",
       });
       setLoading(false);
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -74,7 +76,7 @@ const RecordFeesModal = ({ open, handleClose, feesDetails }) => {
           component="form"
           sx={{
             "& .MuiTextField-root": { m: 1, width: "25ch" },
-            "& .css-1nrlq1o-MuiFormControl-root": {
+            "& .MuiFormControl-root": {
               m: 1,
               width: "25ch",
               padding: "0ch",

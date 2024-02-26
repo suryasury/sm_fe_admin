@@ -1,12 +1,10 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PrivateRoute from "./privateRoute";
-// import Dashboard from "./components/dashboard";
 import Login from "./components/login/login";
 import PageNotFound from "./components/helpers/pageNotFound";
 import ErrorFallBack from "./components/helpers/errorFallBack";
 import { SnackbarProvider } from "notistack";
-// import StudentList from "./components/studentList";
 import StudentDetails from "./components/students/studentDetails";
 import ForgotPassword from "./components/forgotPassword/forgotPassword";
 import ResetPassword from "./components/resetPassword/resetPassword";
@@ -16,7 +14,6 @@ import Teachers from "./components/teachers/teachers";
 import Sections from "./components/sections/sections";
 import AdminUsers from "./components/users/adminUsers";
 import FeesTransactions from "./components/feesDetails/feesTransactions";
-// import Invoice from "./components/invoiceTemplate/invoiceTemplate";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Provider } from "react-redux";
@@ -29,6 +26,7 @@ const App = () => {
         <SnackbarProvider
           anchorOrigin={{ horizontal: "right", vertical: "top" }}
           autoHideDuration={5000}
+          preventDuplicate={true}
         >
           <Router>
             <Routes>
@@ -46,7 +44,6 @@ const App = () => {
                 path="/password/reset/success"
                 element={<PasswordResetSuccessPage />}
               />
-              {/* <Route path="/duminv" element={<Invoice />} />÷ */}
               <Route
                 path="/"
                 element={<PrivateRoute />}

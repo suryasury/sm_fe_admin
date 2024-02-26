@@ -91,7 +91,7 @@ const StudentDetails = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -129,7 +129,7 @@ const StudentDetails = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -151,7 +151,7 @@ const StudentDetails = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -172,7 +172,7 @@ const StudentDetails = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 

@@ -79,8 +79,8 @@ const AddFeesModal = ({
               component="form"
               sx={{
                 "& .MuiTextField-root": { m: 2, width: "25ch" },
-                "& .css-1nrlq1o-MuiFormControl-root": {
-                  m: 2,
+                "& .MuiFormControl-root": {
+                  m: 1,
                   width: "25ch",
                   padding: "0ch",
                 },

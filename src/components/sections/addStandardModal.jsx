@@ -72,7 +72,7 @@ const AddStandardModal = ({
               component="form"
               sx={{
                 "& .MuiTextField-root": { m: 1, width: "25ch" },
-                "& .css-1nrlq1o-MuiFormControl-root": {
+                "& .MuiFormControl-root": {
                   m: 1,
                   width: "25ch",
                   padding: "0ch",

@@ -47,6 +47,7 @@ const fadeInUp = {
 };
 
 const ForgotPassword = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const navigation = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
@@ -68,7 +69,7 @@ const ForgotPassword = () => {
         variant: "error",
         preventDuplicate: true,
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 

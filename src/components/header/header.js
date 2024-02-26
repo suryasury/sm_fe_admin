@@ -45,11 +45,31 @@ const Header = () => {
           alt="Logo"
           style={{ margin: "10px", width: "60px", height: "60px" }}
         />
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          VLMHSS
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{
+            flexGrow: 1,
+            marginLeft: "15px",
+          }}
+        >
+          <span
+            style={{
+              fontWeight: "bolder",
+              letterSpacing: "3px",
+              opacity: "0.7",
+              fontSize: "25px",
+            }}
+          >
+            VLMHSS
+          </span>
         </Typography>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 1, fontWeight: "bolder", opacity: "0.7" }}
+          >
             {userDetails?.name || ""}
           </Typography>
           <Button color="inherit" onClick={handleProfileMenuClick}>

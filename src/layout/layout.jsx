@@ -10,7 +10,7 @@ const LayoutWrapper = ({ children }) => {
         style={{
           display: "flex",
           flexDirection: "column",
-          marginLeft: "250px",
+          marginLeft: "240px",
         }}
       >
         <Sidemenu />

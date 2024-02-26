@@ -21,6 +21,7 @@ import {
 } from "@mui/material";
 import {
   getAcademicYearDetails,
+  getFeesDetailsById,
   getSections,
   getTransactionHistory,
 } from "../../api/api";
@@ -31,11 +32,15 @@ import LayoutWrapper from "../../layout/layout";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
 import { tableCellClasses } from "@mui/material/TableCell";
-// import PersonAddIcon from "@mui/icons-material/PersonAdd";
-// import EditIcon from "@mui/icons-material/Edit";
-// import { DeleteForever } from "@mui/icons-material";
 import { Box } from "@mui/system";
 import { HandleError } from "../helpers/handleError";
+import { DateRangePicker } from "rsuite";
+import "rsuite/dist/rsuite-no-reset.min.css";
+import { Print } from "@mui/icons-material";
+import InvoiceModal from "../students/invoiceModal";
+import WysiwygIcon from "@mui/icons-material/Wysiwyg";
+import TableLoader from "../helpers/tableLoader";
+const { format } = require("date-fns");
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -68,6 +73,8 @@ const FeesTransactions = () => {
   const search = queryParams.get("search");
   const currentPage = queryParams.get("page");
   const pageLimit = queryParams.get("limit");
+  const from = queryParams.get("from");
+  const to = queryParams.get("to");
   const { enqueueSnackbar } = useSnackbar();
   const [pageLoading, setPageLoading] = useState(false);
   const [page, setPage] = useState(currentPage ? currentPage - 1 : 0);
@@ -85,6 +92,10 @@ const FeesTransactions = () => {
   const [selectedTerm, setSelectedTerm] = useState(term || "");
   const [academicYearList, setAcademicYearList] = useState([]);
   const [sectionList, setSectionList] = useState([]);
+  const [selectedDateRange, setSelectedDateRange] = useState(
+    from && to ? [new Date(from), new Date(to)] : []
+  );
+  const [loading, setLoading] = useState(false);
 
   const months = {
     1: {
@@ -137,32 +148,45 @@ const FeesTransactions = () => {
     },
   };
 
-  // const actionRenderer = (row) => {
-  //   return (
-  //     <>
-  //       <div style={{ display: "flex", gap: "15px" }}>
-  //         <Button
-  //           color="primary"
-  //           size="small"
-  //           variant="contained"
-  //           endIcon={<EditIcon />}
-  //           onClick={() => handleEditClick(row)}
-  //         >
-  //           Edit
-  //         </Button>
-  //         <Button
-  //           variant="outlined"
-  //           size="small"
-  //           color="error"
-  //           endIcon={<DeleteForever />}
-  //           onClick={() => handleDeleteClick(row)}
-  //         >
-  //           Delete
-  //         </Button>
-  //       </div>
-  //     </>
-  //   );
-  // };
+  const [selectedFeesDetails, setSelectedFeesDetails] = useState(null);
+  const [openInvoiceModal, setOpenInvoiceModal] = useState(false);
+
+  const handleViewFeesDocument = async (row) => {
+    try {
+      setLoading(true);
+      let id = row.fees_detail.id;
+      let response = await getFeesDetailsById(id);
+      response = response.data;
+      setSelectedFeesDetails(response.data);
+      setOpenInvoiceModal(true);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+      enqueueSnackbar(err?.response?.data?.message || err.message, {
+        variant: "error",
+      });
+      HandleError(err, navigate);
+    }
+  };
+
+  const actionRenderer = (row) => {
+    return (
+      <>
+        <div style={{ display: "flex", gap: "15px" }}>
+          <Button
+            color="primary"
+            size="small"
+            variant="contained"
+            endIcon={<WysiwygIcon />}
+            onClick={() => handleViewFeesDocument(row)}
+            disabled={loading}
+          >
+            View
+          </Button>
+        </div>
+      </>
+    );
+  };
 
   const columns = [
     {
@@ -205,14 +229,15 @@ const FeesTransactions = () => {
       id: "paymentDate",
       label: "Payment Date",
     },
-    // {
-    //   id: "actions",
-    //   label: "Actions",
-    // },
+    {
+      id: "actions",
+      label: "Actions",
+    },
   ];
 
   const getFeesTransactionsListService = async () => {
     try {
+      setPageLoading(true);
       let filters = constructQueryParams();
       let result = await getTransactionHistory(filters);
       setTotalCount(result?.data?.data?.count || 1);
@@ -220,11 +245,13 @@ const FeesTransactions = () => {
         result?.data?.data.feesTransactions || []
       );
       setTransactionHistoryList(formattedArray);
+      setPageLoading(false);
     } catch (err) {
+      setPageLoading(false);
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -250,6 +277,7 @@ const FeesTransactions = () => {
               year: "numeric",
               month: "short",
               day: "numeric",
+              timeZone: "IST",
             })
           : "NA",
         standard:
@@ -257,7 +285,7 @@ const FeesTransactions = () => {
           " - " +
           (row?.fees_detail?.standard?.section || "NA"),
         amount: "₹" + row?.amount_paid.toFixed(1),
-        // actions: actionRenderer(row),
+        actions: actionRenderer(row),
       };
     });
   };
@@ -300,6 +328,12 @@ const FeesTransactions = () => {
     if (rowsPerPage) {
       filters.push(`limit=${rowsPerPage}`);
     }
+    if (selectedDateRange.length > 0) {
+      let selectedFromDate = format(selectedDateRange[0], "yyyy-MM-dd");
+      let selectedToDate = format(selectedDateRange[1], "yyyy-MM-dd");
+      filters.push(`from=${selectedFromDate}`);
+      filters.push(`to=${selectedToDate}`);
+    }
     let urlPath = "";
     let queryFilters = "";
     if (filters.length > 0) {
@@ -331,6 +365,7 @@ const FeesTransactions = () => {
     selectedTerm,
     selectedAcademicYear,
     selectedSection,
+    selectedDateRange,
   ]);
 
   const getAcademicYearListService = async () => {
@@ -342,7 +377,7 @@ const FeesTransactions = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -356,7 +391,7 @@ const FeesTransactions = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -381,6 +416,8 @@ const FeesTransactions = () => {
         setSelectedAcademicYear(e.target.value);
       } else if (e.target.name === "term") {
         setSelectedTerm(e.target.value);
+      } else if (e.target.name === "paymentDateRange") {
+        setSelectedDateRange(e.target.value || []);
       }
     }
   };
@@ -390,12 +427,13 @@ const FeesTransactions = () => {
     setSelectedSection("");
     setSelectedAcademicYear("");
     setSelectedTerm("");
+    setSelectedDateRange([]);
   };
 
   return (
     <LayoutWrapper>
       <RootStyle>
-        {pageLoading ? (
+        {false ? (
           <PageLoader />
         ) : (
           <>
@@ -403,7 +441,7 @@ const FeesTransactions = () => {
               <Typography
                 variant="h4"
                 style={{
-                  opacity: "0.7",
+                  opacity: "0.6",
                   fontWeight: "bolder",
                   marginBottom: "20px",
                 }}
@@ -429,7 +467,7 @@ const FeesTransactions = () => {
                     size="small"
                     style={{
                       // maxWidth: "450px",
-                      width: "25%",
+                      width: "16%",
                       // marginLeft: "20px",
                     }}
                     value={searchQuery}
@@ -535,12 +573,30 @@ const FeesTransactions = () => {
                       </Select>
                     </FormControl>
                   </Box>
+                  <DateRangePicker
+                    style={{
+                      marginLeft: "15px",
+                    }}
+                    className="date-range-selector-custom"
+                    value={selectedDateRange}
+                    onChange={(e) => {
+                      console.log("kdjaskdjaskd", e);
+                      handleFilterChange({
+                        target: { name: "paymentDateRange", value: e },
+                      });
+                    }}
+                    size="lg"
+                    format="dd/MM/yyyy"
+                    character=" – "
+                    placeholder="Select payment dates"
+                    name="paymentDateRange"
+                  />
                   <div style={{ width: "200px" }}>
                     <Button
                       style={{ marginLeft: "15px" }}
                       onClick={handleClearFilter}
                     >
-                      Clear Filter
+                      Clear Filters
                     </Button>
                   </div>
                 </div>
@@ -575,35 +631,48 @@ const FeesTransactions = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {transactionHistoryList.length === 0 ? (
+                      {pageLoading ? (
                         <TableRow style={{ height: "300px" }}>
                           <TableCell colSpan={columns.length} align="center">
-                            No Data Found
+                            <TableLoader />
                           </TableCell>
                         </TableRow>
                       ) : (
-                        transactionHistoryList.map((row) => {
-                          return (
-                            <StyledTableRow
-                              hover
-                              role="checkbox"
-                              tabIndex={-1}
-                              key={row.admissionNo}
-                            >
-                              {columns.map((column) => {
-                                const value = row[column.id];
-                                return (
-                                  <StyledTableCell
-                                    key={column.id}
-                                    align={column.align}
-                                  >
-                                    {value}
-                                  </StyledTableCell>
-                                );
-                              })}
-                            </StyledTableRow>
-                          );
-                        })
+                        <>
+                          {transactionHistoryList.length === 0 ? (
+                            <TableRow style={{ height: "300px" }}>
+                              <TableCell
+                                colSpan={columns.length}
+                                align="center"
+                              >
+                                No Data Found
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            transactionHistoryList.map((row) => {
+                              return (
+                                <StyledTableRow
+                                  hover
+                                  role="checkbox"
+                                  tabIndex={-1}
+                                  key={row.admissionNo}
+                                >
+                                  {columns.map((column) => {
+                                    const value = row[column.id];
+                                    return (
+                                      <StyledTableCell
+                                        key={column.id}
+                                        align={column.align}
+                                      >
+                                        {value}
+                                      </StyledTableCell>
+                                    );
+                                  })}
+                                </StyledTableRow>
+                              );
+                            })
+                          )}
+                        </>
                       )}
                     </TableBody>
                   </Table>
@@ -618,6 +687,14 @@ const FeesTransactions = () => {
                   onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Paper>
+              <InvoiceModal
+                feesDetails={selectedFeesDetails}
+                open={openInvoiceModal}
+                handleClose={() => {
+                  setSelectedFeesDetails(null);
+                  setOpenInvoiceModal(false);
+                }}
+              />
             </div>
           </>
         )}

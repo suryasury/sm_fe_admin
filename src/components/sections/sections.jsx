@@ -30,6 +30,8 @@ import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import AddStandardModal from "./addStandardModal";
 import EditStandardModal from "./editStandardModal";
 import { HandleError } from "../helpers/handleError";
+import TableLoader from "../helpers/tableLoader";
+import { Box } from "@mui/system";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -145,6 +147,7 @@ const Sections = () => {
 
   const getStandardListService = async () => {
     try {
+      setPageLoading(true);
       let filters = constructQueryParams();
       let result = await getStandardList(filters);
       setTotalCount(result?.data?.data?.count || 1);
@@ -152,11 +155,13 @@ const Sections = () => {
         result?.data?.data.standardList || []
       );
       setStandardList(formattedArray);
+      setPageLoading(false);
     } catch (err) {
+      setPageLoading(false);
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
   const getTeacherListService = async () => {
@@ -168,7 +173,7 @@ const Sections = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -280,7 +285,7 @@ const Sections = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -300,14 +305,14 @@ const Sections = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
   return (
     <LayoutWrapper>
       <RootStyle>
-        {pageLoading ? (
+        {false ? (
           <PageLoader />
         ) : (
           <>
@@ -315,7 +320,7 @@ const Sections = () => {
               <Typography
                 variant="h4"
                 style={{
-                  opacity: "0.7",
+                  opacity: "0.6",
                   fontWeight: "bolder",
                   marginBottom: "20px",
                 }}
@@ -352,7 +357,6 @@ const Sections = () => {
               >
                 <TableContainer sx={{ maxHeight: 700 }}>
                   <Table stickyHeader aria-label="sticky table">
-                    {/* <caption>A basic table example with a caption</caption> */}
                     <TableHead>
                       <TableRow>
                         {columns.map((column) => (
@@ -367,35 +371,48 @@ const Sections = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {standardList.length === 0 ? (
+                      {pageLoading ? (
                         <TableRow style={{ height: "300px" }}>
                           <TableCell colSpan={columns.length} align="center">
-                            No Data Found
+                            <TableLoader />
                           </TableCell>
                         </TableRow>
                       ) : (
-                        standardList.map((row) => {
-                          return (
-                            <StyledTableRow
-                              hover
-                              role="checkbox"
-                              tabIndex={-1}
-                              key={row.admissionNo}
-                            >
-                              {columns.map((column) => {
-                                const value = row[column.id];
-                                return (
-                                  <StyledTableCell
-                                    key={column.id}
-                                    align={column.align}
-                                  >
-                                    {value}
-                                  </StyledTableCell>
-                                );
-                              })}
-                            </StyledTableRow>
-                          );
-                        })
+                        <>
+                          {standardList.length === 0 ? (
+                            <TableRow style={{ height: "300px" }}>
+                              <TableCell
+                                colSpan={columns.length}
+                                align="center"
+                              >
+                                No Data Found
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            standardList.map((row) => {
+                              return (
+                                <StyledTableRow
+                                  hover
+                                  role="checkbox"
+                                  tabIndex={-1}
+                                  key={row.admissionNo}
+                                >
+                                  {columns.map((column) => {
+                                    const value = row[column.id];
+                                    return (
+                                      <StyledTableCell
+                                        key={column.id}
+                                        align={column.align}
+                                      >
+                                        {value}
+                                      </StyledTableCell>
+                                    );
+                                  })}
+                                </StyledTableRow>
+                              );
+                            })
+                          )}
+                        </>
                       )}
                     </TableBody>
                   </Table>

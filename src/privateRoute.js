@@ -16,7 +16,6 @@ const PrivateRoute = () => {
 const GetUserDetails = async (dispatch) => {
   try {
     const userDetails = useSelector((state) => state.user.value);
-    console.log("dispatchedUD", userDetails);
     if (!userDetails) {
       let response = await getAdminDetails();
       response = response.data;

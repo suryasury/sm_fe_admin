@@ -1,8 +1,6 @@
-// import { useNavigate } from "react-router-dom";
-export const HandleError = (err) => {
-  //   const navigate = useNavigate();
+export const HandleError = (err, navigate) => {
   if (err?.response?.status === 401) {
     localStorage.removeItem("accessToken");
-    window.history.pushState({}, "", "/login");
+    navigate("/login");
   }
 };

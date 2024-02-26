@@ -46,6 +46,7 @@ import AddStudentModal from "./addStudentModal";
 import EditIcon from "@mui/icons-material/Edit";
 import EditStudentDetailsModal from "./editStudentModal";
 import { HandleError } from "../helpers/handleError";
+import TableLoader from "../helpers/tableLoader";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -151,7 +152,7 @@ const Students = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -232,6 +233,7 @@ const Students = () => {
 
   const getStudentListService = async () => {
     try {
+      setPageLoading(true);
       let filters = constructQueryParams();
       let result = await getStudentList(filters);
       setTotalCount(result?.data?.data?.count || 0);
@@ -239,11 +241,13 @@ const Students = () => {
         result?.data?.data?.studentList || []
       );
       setStudentList(formattedArray);
+      setPageLoading(false);
     } catch (err) {
+      setPageLoading(false);
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -398,7 +402,7 @@ const Students = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -417,7 +421,7 @@ const Students = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -437,7 +441,7 @@ const Students = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -450,7 +454,7 @@ const Students = () => {
   return (
     <LayoutWrapper>
       <RootStyle>
-        {pageLoading ? (
+        {false ? (
           <PageLoader />
         ) : (
           <>
@@ -458,7 +462,7 @@ const Students = () => {
               <Typography
                 variant="h4"
                 style={{
-                  opacity: "0.7",
+                  opacity: "0.6",
                   fontWeight: "bolder",
                   marginBottom: "20px",
                 }}
@@ -628,35 +632,48 @@ const Students = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {studentList.length === 0 ? (
+                      {pageLoading ? (
                         <TableRow style={{ height: "300px" }}>
                           <TableCell colSpan={columns.length} align="center">
-                            No Data Found
+                            <TableLoader />
                           </TableCell>
                         </TableRow>
                       ) : (
-                        studentList.map((row) => {
-                          return (
-                            <StyledTableRow
-                              hover
-                              role="checkbox"
-                              tabIndex={-1}
-                              key={row.admissionNo}
-                            >
-                              {columns.map((column) => {
-                                const value = row[column.id];
-                                return (
-                                  <StyledTableCell
-                                    key={column.id}
-                                    align={column.align}
-                                  >
-                                    {value}
-                                  </StyledTableCell>
-                                );
-                              })}
-                            </StyledTableRow>
-                          );
-                        })
+                        <>
+                          {studentList.length === 0 ? (
+                            <TableRow style={{ height: "300px" }}>
+                              <TableCell
+                                colSpan={columns.length}
+                                align="center"
+                              >
+                                No Data Found
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            studentList.map((row) => {
+                              return (
+                                <StyledTableRow
+                                  hover
+                                  role="checkbox"
+                                  tabIndex={-1}
+                                  key={row.admissionNo}
+                                >
+                                  {columns.map((column) => {
+                                    const value = row[column.id];
+                                    return (
+                                      <StyledTableCell
+                                        key={column.id}
+                                        align={column.align}
+                                      >
+                                        {value}
+                                      </StyledTableCell>
+                                    );
+                                  })}
+                                </StyledTableRow>
+                              );
+                            })
+                          )}
+                        </>
                       )}
                     </TableBody>
                   </Table>

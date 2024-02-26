@@ -24,28 +24,28 @@ const SideMenu = () => {
       id: "student",
     },
     {
-      title: "Teachers",
-      logo: <SupervisedUserCircleIcon />,
-      link: "/teachers",
-      id: "teachers",
-    },
-    {
       title: "Sections",
       logo: <MeetingRoomIcon />,
       link: "/sections",
       id: "sections",
     },
     {
-      title: "Admin Users",
-      logo: <AdminPanelSettingsIcon />,
-      link: "/users",
-      id: "adminUsers",
+      title: "Teachers",
+      logo: <SupervisedUserCircleIcon />,
+      link: "/teachers",
+      id: "teachers",
     },
     {
       title: "Fees Transactions",
       logo: <ReceiptIcon />,
       link: "/fees-transactions",
       id: "feesTransactions",
+    },
+    {
+      title: "Admin Users",
+      logo: <AdminPanelSettingsIcon />,
+      link: "/users",
+      id: "adminUsers",
     },
   ];
 
@@ -65,38 +65,35 @@ const SideMenu = () => {
   };
 
   return (
-    <div>
-      <Drawer
-        style={{ borderRight: "0px" }}
-        variant="permanent"
-        classes={{
-          paper: "drawerPaper",
-        }}
-      >
-        <div style={{ textAlign: "center" }}>
-          <h2 style={{ fontWeight: "lighter" }}>Admin portal</h2>
-        </div>
-        <List>
-          {sideMenuItems.map((item, index) => (
-            <ListItem
-              button
-              key={index}
-              style={
-                activeTab === item.id
-                  ? { backgroundColor: "rgb(225, 225, 225)" }
-                  : { backgroundColor: "white" }
-              }
-              onClick={() => {
-                handleListItemClick(item);
-              }}
-            >
-              <ListItemIcon>{item.logo}</ListItemIcon>
-              <ListItemText primary={item.title} />
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-    </div>
+    <Drawer
+      variant="permanent"
+      classes={{
+        paper: "drawerPaper",
+      }}
+    >
+      <div style={{ textAlign: "center" }}>
+        <h2 style={{ fontWeight: "bold", opacity: "0.7" }}>Admin Portal</h2>
+      </div>
+      <List>
+        {sideMenuItems.map((item, index) => (
+          <ListItem
+            button
+            key={index}
+            style={
+              activeTab === item.id
+                ? { backgroundColor: "rgb(225, 225, 225)" }
+                : { backgroundColor: "white" }
+            }
+            onClick={() => {
+              handleListItemClick(item);
+            }}
+          >
+            <ListItemIcon>{item.logo}</ListItemIcon>
+            <ListItemText primary={item.title} />
+          </ListItem>
+        ))}
+      </List>
+    </Drawer>
   );
 };
 

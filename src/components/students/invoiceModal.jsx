@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { Button, Dialog, DialogTitle, DialogContent } from "@mui/material";
 import InvoiceTemplate from "../invoiceTemplate/invoiceTemplate";
 import { useReactToPrint } from "react-to-print";
+import { PrintTwoTone } from "@mui/icons-material";
 
 const InvoiceModal = ({ open, handleClose, feesDetails }) => {
   const invoiceRef = useRef(null);
@@ -26,7 +27,12 @@ const InvoiceModal = ({ open, handleClose, feesDetails }) => {
         }}
       >
         <DialogTitle color={"#d32f2f"}>Invoice Details</DialogTitle>
-        <Button onClick={handlePrint} size="lg" variant="contained">
+        <Button
+          onClick={handlePrint}
+          size="lg"
+          variant="contained"
+          endIcon={<PrintTwoTone />}
+        >
           Print
         </Button>
       </div>

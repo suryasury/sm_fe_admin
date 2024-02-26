@@ -475,6 +475,20 @@ export const getTransactionHistory = async (filter) => {
   }
 };
 
+export const getFeesDetailsById = async (id) => {
+  try {
+    let result = await axios.get(`${apiUrl}/api/admin/fees/details/${id}`, {
+      headers: {
+        Authorization: getAuthToken(),
+      },
+    });
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
 export const getAcademicYearDetails = async () => {
   try {
     let result = await axios.get(`${apiUrl}/api/admin/academic-year`, {

@@ -14,6 +14,7 @@ import {
   TableBody,
   TableCell,
   TablePagination,
+  Chip,
 } from "@mui/material";
 import {
   createAdmin,
@@ -35,6 +36,9 @@ import AddAdminModal from "./addAdminModal";
 import EditAdminModal from "./editAdminModal";
 import DeleteConfirmationModal from "./confirmationModal";
 import { HandleError } from "../helpers/handleError";
+import { useSelector } from "react-redux";
+import { Box } from "@mui/system";
+import TableLoader from "../helpers/tableLoader";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -61,6 +65,7 @@ const RootStyle = styled("div")({});
 const ContainerStyle = {};
 
 const AdminUsers = () => {
+  const userDetails = useSelector((state) => state.user.value);
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -109,6 +114,7 @@ const AdminUsers = () => {
             color="error"
             endIcon={<DeleteForever />}
             onClick={() => handleDeleteClick(row)}
+            disabled={userDetails?.email === row.email}
           >
             Delete
           </Button>
@@ -142,6 +148,7 @@ const AdminUsers = () => {
 
   const getAdminListService = async () => {
     try {
+      setPageLoading(true);
       let filters = constructQueryParams();
       let result = await getAdminList(filters);
       setTotalCount(result?.data?.data?.count || 1);
@@ -149,13 +156,18 @@ const AdminUsers = () => {
         result?.data?.data.adminList || []
       );
       setAdminList(formattedArray);
+      setPageLoading(false);
     } catch (err) {
-      console.log(err);
+      setPageLoading(false);
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
+  };
+
+  const chipRenderer = (email) => {
+    return <Chip label="Current User" color="success" />;
   };
 
   const convertToTableData = (list = []) => {
@@ -163,7 +175,23 @@ const AdminUsers = () => {
       return {
         id: row.id,
         name: row.name,
-        email: row.email,
+        email: (() => {
+          return (
+            <>
+              <span>
+                {row.email}
+                {row.email === userDetails?.email && (
+                  <Chip
+                    label="Current User"
+                    color="success"
+                    size="small"
+                    style={{ marginLeft: "10px" }}
+                  />
+                )}
+              </span>
+            </>
+          );
+        })(),
         mobileNumber: row.mobileNumber,
         actions: actionRenderer(row),
       };
@@ -239,7 +267,7 @@ const AdminUsers = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -258,7 +286,7 @@ const AdminUsers = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -278,7 +306,7 @@ const AdminUsers = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err);
+      HandleError(err, navigate);
     }
   };
 
@@ -288,7 +316,7 @@ const AdminUsers = () => {
   return (
     <LayoutWrapper>
       <RootStyle>
-        {pageLoading ? (
+        {false ? (
           <PageLoader />
         ) : (
           <>
@@ -296,7 +324,7 @@ const AdminUsers = () => {
               <Typography
                 variant="h4"
                 style={{
-                  opacity: "0.7",
+                  opacity: "0.6",
                   fontWeight: "bolder",
                   marginBottom: "20px",
                 }}
@@ -367,7 +395,6 @@ const AdminUsers = () => {
               >
                 <TableContainer sx={{ maxHeight: 700 }}>
                   <Table stickyHeader aria-label="sticky table">
-                    {/* <caption>A basic table example with a caption</caption> */}
                     <TableHead>
                       <TableRow>
                         {columns.map((column) => (
@@ -382,35 +409,48 @@ const AdminUsers = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {adminList.length === 0 ? (
+                      {pageLoading ? (
                         <TableRow style={{ height: "300px" }}>
                           <TableCell colSpan={columns.length} align="center">
-                            No Data Found
+                            <TableLoader />
                           </TableCell>
                         </TableRow>
                       ) : (
-                        adminList.map((row) => {
-                          return (
-                            <StyledTableRow
-                              hover
-                              role="checkbox"
-                              tabIndex={-1}
-                              key={row.admissionNo}
-                            >
-                              {columns.map((column) => {
-                                const value = row[column.id];
-                                return (
-                                  <StyledTableCell
-                                    key={column.id}
-                                    align={column.align}
-                                  >
-                                    {value}
-                                  </StyledTableCell>
-                                );
-                              })}
-                            </StyledTableRow>
-                          );
-                        })
+                        <>
+                          {adminList.length === 0 ? (
+                            <TableRow style={{ height: "300px" }}>
+                              <TableCell
+                                colSpan={columns.length}
+                                align="center"
+                              >
+                                No Data Found
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            adminList.map((row) => {
+                              return (
+                                <StyledTableRow
+                                  hover
+                                  role="checkbox"
+                                  tabIndex={-1}
+                                  key={row.admissionNo}
+                                >
+                                  {columns.map((column) => {
+                                    const value = row[column.id];
+                                    return (
+                                      <StyledTableCell
+                                        key={column.id}
+                                        align={column.align}
+                                      >
+                                        {value}
+                                      </StyledTableCell>
+                                    );
+                                  })}
+                                </StyledTableRow>
+                              );
+                            })
+                          )}
+                        </>
                       )}
                     </TableBody>
                   </Table>

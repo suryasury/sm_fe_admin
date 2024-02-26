@@ -7,6 +7,7 @@ import {
   DialogActions,
   TextField,
   Box,
+  Alert,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import * as Yup from "yup";
@@ -88,6 +89,14 @@ const AddAdminModal = ({
                 error={Boolean(touched.mobileNumber && errors.mobileNumber)}
                 helperText={touched.mobileNumber && errors.mobileNumber}
               />
+              <Alert
+                severity="info"
+                style={{ marginTop: "10px", width: "93%" }}
+              >
+                By default, the admin's mobile number serves as their password.
+                We kindly request admins to reset their password in the admin's
+                portal after logging in for enhanced security.
+              </Alert>
             </Box>
           </DialogContent>
           <DialogActions>
