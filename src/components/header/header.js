@@ -20,7 +20,7 @@ const Header = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleLogout = () => {
-    localStorage.removeItem("accessToken");
+    localStorage.removeItem("adminAccessToken");
     navigate("/login");
   };
 

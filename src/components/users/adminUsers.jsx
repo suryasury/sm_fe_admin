@@ -345,7 +345,7 @@ const AdminUsers = () => {
                   }}
                 >
                   <TextField
-                    label="Admin name or email"
+                    label="Admin Name / Email"
                     variant="outlined"
                     size="small"
                     style={{
@@ -374,7 +374,7 @@ const AdminUsers = () => {
                       style={{ marginLeft: "20px" }}
                       onClick={handleClearFilter}
                     >
-                      Clear Filter
+                      Clear
                     </Button>
                   </div>
                 </div>

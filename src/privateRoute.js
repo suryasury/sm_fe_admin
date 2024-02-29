@@ -6,7 +6,7 @@ import { addUserDetails } from "./reducers/userSlice";
 
 const PrivateRoute = () => {
   const dispatch = useDispatch();
-  const isAuthenticated = !!localStorage.getItem("accessToken");
+  const isAuthenticated = !!localStorage.getItem("adminAccessToken");
   if (isAuthenticated) {
     GetUserDetails(dispatch);
     return <Outlet />;

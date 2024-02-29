@@ -386,16 +386,16 @@ const Teachers = () => {
                   }}
                 >
                   <Box>
-                    <FormControl size="small" style={{ width: "200px" }}>
+                    <FormControl size="small" style={{ width: "120px" }}>
                       <InputLabel id="beautiful-dropdown-label">
-                        Standard & Section
+                        Standard
                       </InputLabel>
                       <Select
                         labelId="beautiful-dropdown-label"
                         id="beautiful-dropdown"
                         value={selectedSection}
                         onChange={handleFilterChange}
-                        label="Standard & Section"
+                        label="Standard"
                         name="section"
                       >
                         <MenuItem value="">
@@ -413,11 +413,11 @@ const Teachers = () => {
                     </FormControl>
                   </Box>
                   <TextField
-                    label="Teacher id/name/email"
+                    label="Teacher ID / Name / Email"
                     variant="outlined"
                     size="small"
                     style={{
-                      maxWidth: "450px",
+                      maxWidth: "300px",
                       width: "100%",
                       marginLeft: "20px",
                     }}
@@ -443,7 +443,7 @@ const Teachers = () => {
                       style={{ marginLeft: "20px" }}
                       onClick={handleClearFilter}
                     >
-                      Clear Filter
+                      Clear
                     </Button>
                   </div>
                 </div>

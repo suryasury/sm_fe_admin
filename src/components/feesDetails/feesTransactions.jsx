@@ -453,6 +453,7 @@ const FeesTransactions = () => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
+                  flexWrap: "wrap",
                 }}
               >
                 <div
@@ -461,14 +462,28 @@ const FeesTransactions = () => {
                     alignItems: "center",
                   }}
                 >
+                  <DateRangePicker
+                    className="date-range-selector-custom"
+                    value={selectedDateRange}
+                    onChange={(e) => {
+                      console.log("kdjaskdjaskd", e);
+                      handleFilterChange({
+                        target: { name: "paymentDateRange", value: e },
+                      });
+                    }}
+                    size="lg"
+                    format="dd/MM/yyyy"
+                    character=" – "
+                    placeholder="Payment dates"
+                    name="paymentDateRange"
+                  />
                   <TextField
-                    label="Name or Admn No"
+                    label="Admn No / Name"
                     variant="outlined"
                     size="small"
                     style={{
-                      // maxWidth: "450px",
-                      width: "16%",
-                      // marginLeft: "20px",
+                      width: "280px",
+                      marginLeft: "15px",
                     }}
                     value={searchQuery}
                     onChange={handleSearch}
@@ -523,7 +538,7 @@ const FeesTransactions = () => {
                   <Box>
                     <FormControl
                       size="small"
-                      style={{ width: "140px", marginLeft: "15px" }}
+                      style={{ width: "110px", marginLeft: "15px" }}
                     >
                       <InputLabel id="beautiful-dropdown-label">
                         Term
@@ -546,17 +561,17 @@ const FeesTransactions = () => {
                   <Box>
                     <FormControl
                       size="small"
-                      style={{ width: "200px", marginLeft: "15px" }}
+                      style={{ width: "130px", marginLeft: "15px" }}
                     >
                       <InputLabel id="beautiful-dropdown-label">
-                        Standard & Section
+                        Standard
                       </InputLabel>
                       <Select
                         labelId="beautiful-dropdown-label"
                         id="beautiful-dropdown"
                         value={selectedSection}
                         onChange={handleFilterChange}
-                        label="Standard & Section"
+                        label="Standard"
                         name="section"
                       >
                         <MenuItem value="">
@@ -573,30 +588,12 @@ const FeesTransactions = () => {
                       </Select>
                     </FormControl>
                   </Box>
-                  <DateRangePicker
-                    style={{
-                      marginLeft: "15px",
-                    }}
-                    className="date-range-selector-custom"
-                    value={selectedDateRange}
-                    onChange={(e) => {
-                      console.log("kdjaskdjaskd", e);
-                      handleFilterChange({
-                        target: { name: "paymentDateRange", value: e },
-                      });
-                    }}
-                    size="lg"
-                    format="dd/MM/yyyy"
-                    character=" – "
-                    placeholder="Select payment dates"
-                    name="paymentDateRange"
-                  />
                   <div style={{ width: "200px" }}>
                     <Button
                       style={{ marginLeft: "15px" }}
                       onClick={handleClearFilter}
                     >
-                      Clear Filters
+                      Clear
                     </Button>
                   </div>
                 </div>
@@ -608,7 +605,7 @@ const FeesTransactions = () => {
                         setOpenAddAdminModal(!openAddAdminModal);
                       }}
                     >
-                      Add Admin
+                      Download
                     </Button>
                   </div> */}
               </div>

@@ -531,17 +531,17 @@ const Students = () => {
                   <Box>
                     <FormControl
                       size="small"
-                      style={{ width: "200px", marginLeft: "15px" }}
+                      style={{ width: "110px", marginLeft: "15px" }}
                     >
                       <InputLabel id="beautiful-dropdown-label">
-                        Standard & Section
+                        Standard
                       </InputLabel>
                       <Select
                         labelId="beautiful-dropdown-label"
                         id="beautiful-dropdown"
                         value={selectedSection}
                         onChange={handleFilterChange}
-                        label="Standard & Section"
+                        label="Standard"
                         name="section"
                       >
                         <MenuItem value="">
@@ -559,12 +559,12 @@ const Students = () => {
                     </FormControl>
                   </Box>
                   <TextField
-                    label="Admn No/Student name"
+                    label="Admn No / Name"
                     variant="outlined"
                     size="small"
                     style={{
-                      maxWidth: "300px",
-                      width: "100%",
+                      // maxWidth: "300px",
+                      width: "200px",
                       marginLeft: "20px",
                     }}
                     value={searchQuery}
@@ -609,7 +609,7 @@ const Students = () => {
                       setOpenUploadModal(!openUploadModal);
                     }}
                   >
-                    Master Upload
+                    Upload
                   </Button>
                 </div>
               </div>

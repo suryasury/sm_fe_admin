@@ -2,7 +2,7 @@ import axios from "axios";
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const getAuthToken = () => {
-  let token = "Bearer " + localStorage.getItem("accessToken");
+  let token = "Bearer " + localStorage.getItem("adminAccessToken");
   return token;
 };
 
