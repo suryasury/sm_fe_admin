@@ -88,6 +88,7 @@ const EditFeesModal = ({
             >
               <TextField
                 label="Term"
+                required
                 disabled
                 type="number"
                 {...getFieldProps("term")}
@@ -96,6 +97,7 @@ const EditFeesModal = ({
               />
               <TextField
                 label="Term Fees"
+                required
                 type="number"
                 {...getFieldProps("total_amount")}
                 error={Boolean(touched.total_amount && errors.total_amount)}
@@ -103,6 +105,7 @@ const EditFeesModal = ({
               />
               <TextField
                 label="SC Fees"
+                required
                 type="number"
                 {...getFieldProps("sc_fees")}
                 error={Boolean(touched.sc_fees && errors.sc_fees)}
@@ -111,8 +114,10 @@ const EditFeesModal = ({
               <FormControl
                 error={Boolean(touched.due_date && errors.due_date)}
                 style={{ marginTop: "0px", marginLeft: "0" }}
+                required
               >
                 <DatePicker
+                  required
                   label="Due Date"
                   value={dayjs(getFieldProps("due_date").value)}
                   onChange={(newValue) => {

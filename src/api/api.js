@@ -159,9 +159,8 @@ export const masterUploadStudents = async (formData) => {
 
 export const deleteStudent = async (id) => {
   try {
-    let result = await axios.patch(
+    let result = await axios.delete(
       `${apiUrl}/api/admin/student/delete/${id}`,
-      {},
       {
         headers: {
           Authorization: getAuthToken(),
@@ -214,6 +213,24 @@ export const updateStudentDetails = async (body) => {
         Authorization: getAuthToken(),
       },
     });
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const markStudentActive = async (id) => {
+  try {
+    let result = await axios.patch(
+      `${apiUrl}/api/admin/student/activate/${id}`,
+      {},
+      {
+        headers: {
+          Authorization: getAuthToken(),
+        },
+      }
+    );
     return result;
   } catch (err) {
     console.log("error", err);

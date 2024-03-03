@@ -32,7 +32,9 @@ const EditTeacherModal = ({
     teacherName: Yup.string().required("Teacher Name is required"),
     teacherEmail: Yup.string().email().required("Email is required"),
     sections: Yup.array().min(1, "Select atleast one standard"),
-    teacherMobileNumber: Yup.string().required("Mobile Number is required"),
+    teacherMobileNumber: Yup.string()
+      .required("Mobile Number is required")
+      .matches(/^[6-9]\d{9}$/, "Not a valid mobile number"),
     removedSections: Yup.array().optional(),
     id: Yup.number().required(),
   });
@@ -96,6 +98,7 @@ const EditTeacherModal = ({
             >
               <TextField
                 label="Teacher ID"
+                required
                 type="text"
                 disabled
                 {...getFieldProps("teacherId")}
@@ -104,6 +107,7 @@ const EditTeacherModal = ({
               />
               <TextField
                 label="Teacher Name"
+                required
                 type="text"
                 {...getFieldProps("teacherName")}
                 error={Boolean(touched.teacherName && errors.teacherName)}
@@ -111,6 +115,7 @@ const EditTeacherModal = ({
               />
               <TextField
                 label="Email"
+                required
                 type="text"
                 {...getFieldProps("teacherEmail")}
                 error={Boolean(touched.teacherEmail && errors.teacherEmail)}
@@ -118,8 +123,10 @@ const EditTeacherModal = ({
               />
               <TextField
                 label="Mobile Number"
+                required
                 type="text"
                 {...getFieldProps("teacherMobileNumber")}
+                inputProps={{ maxLength: 10 }}
                 error={Boolean(
                   touched.teacherMobileNumber && errors.teacherMobileNumber
                 )}
@@ -130,6 +137,7 @@ const EditTeacherModal = ({
               <FormControl
                 error={Boolean(touched.sections && errors.sections)}
                 style={{ width: "450px" }}
+                required
               >
                 <InputLabel id="selectedOptions-label">
                   Standard & Sections

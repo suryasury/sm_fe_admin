@@ -48,8 +48,6 @@ const EditStandardModal = ({
     },
   });
 
-  console.log("teachersss", teachers);
-
   const { errors, touched, handleSubmit, getFieldProps, resetForm } = formik;
   return (
     <Dialog
@@ -83,6 +81,7 @@ const EditStandardModal = ({
             >
               <TextField
                 label="Standard"
+                required
                 type="text"
                 disabled
                 {...getFieldProps("standard")}
@@ -91,6 +90,7 @@ const EditStandardModal = ({
               />
               <TextField
                 label="Section"
+                required
                 type="text"
                 disabled
                 {...getFieldProps("section")}
@@ -101,12 +101,12 @@ const EditStandardModal = ({
                 error={Boolean(touched.teacherId && errors.teacherId)}
               >
                 <InputLabel id="beautiful-dropdown-label">
-                  Select Teacher
+                  Select Teacher(Optional)
                 </InputLabel>
                 <Select
                   labelId="demo-simple-select-readonly-label"
                   id="beautiful-dropdown"
-                  label="Select Teacher"
+                  label="Select Teacher(Optional)"
                   {...getFieldProps("teacherId")}
                   helperText={touched.teacherId && errors.teacherId}
                 >

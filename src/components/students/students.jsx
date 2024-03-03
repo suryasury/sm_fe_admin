@@ -20,12 +20,16 @@ import {
   TableCell,
   TablePagination,
   Chip,
+  Switch,
+  // FormGroup,
+  // FormControlLabel,
 } from "@mui/material";
 import {
   createStudent,
   deleteStudent,
   getSections,
   getStudentList,
+  markStudentActive,
   masterUploadStudents,
   updateStudentDetails,
 } from "../../api/api";
@@ -36,7 +40,7 @@ import LayoutWrapper from "../../layout/layout";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
 import { tableCellClasses } from "@mui/material/TableCell";
-// import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteIcon from "@mui/icons-material/Delete";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import FileUploadModal from "./fileUploadModal";
@@ -47,6 +51,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import EditStudentDetailsModal from "./editStudentModal";
 import { HandleError } from "../helpers/handleError";
 import TableLoader from "../helpers/tableLoader";
+import ToggleOnIcon from "@mui/icons-material/ToggleOn";
+import ToggleConfirmationModal from "./toggleConfirmationModal";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -115,6 +121,7 @@ const Students = () => {
   const section = queryParams.get("section");
   const currentPage = queryParams.get("page");
   const pageLimit = queryParams.get("limit");
+  const studentStatus = queryParams.get("studentStatus");
   const { enqueueSnackbar } = useSnackbar();
   const [pageLoading, setPageLoading] = useState(false);
   const [studentList, setStudentList] = useState([]);
@@ -122,6 +129,9 @@ const Students = () => {
   const [selectedSection, setSelectedSection] = useState(section);
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState(
     paymentStatus || ""
+  );
+  const [selectedStudentStatus, setSelectedStudentStatus] = useState(
+    studentStatus || "active"
   );
   const [page, setPage] = useState(currentPage ? currentPage - 1 : 0);
   const [rowsPerPage, setRowsPerPage] = useState(pageLimit || 10);
@@ -135,6 +145,7 @@ const Students = () => {
   const [openAddStudentModal, setOpenAddStudentModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [editData, setEditData] = useState(null);
+  const [toggleConfirmationModal, setToggleConfirmationModal] = useState(false);
 
   const handleUpload = async (file) => {
     setLoading(false);
@@ -156,10 +167,10 @@ const Students = () => {
     }
   };
 
-  // const handleDeleteClick = (row) => {
-  //   setSelectedRowData(row);
-  //   setOpenConfirmationModal(true);
-  // };
+  const handleDeleteClick = (row) => {
+    setSelectedRowData(row);
+    setOpenConfirmationModal(true);
+  };
   const handleViewClick = (row) => {
     navigate(`/student/${row.id}`);
   };
@@ -169,32 +180,63 @@ const Students = () => {
     setOpenEditModal(true);
   };
 
+  const handleActiveToggle = (row) => {
+    setEditData(row);
+    setToggleConfirmationModal(true);
+  };
+
   const actionRenderer = (row) => {
     return (
       <>
-        <div style={{ display: "flex", gap: "15px" }}>
+        <div style={{ display: "flex", gap: "20px" }}>
           <Button
             variant="outlined"
             size="small"
+            color="inherit"
             endIcon={<RemoveRedEyeIcon />}
             onClick={() => handleViewClick(row)}
           >
             View
           </Button>
+          {row.is_active && (
+            <Button
+              color="primary"
+              variant="outlined"
+              size="small"
+              endIcon={<EditIcon />}
+              onClick={() => handleEditClick(row)}
+            >
+              Edit
+            </Button>
+          )}
+          {!row.is_active && (
+            <Button
+              color="error"
+              variant="outlined"
+              size="small"
+              endIcon={<ToggleOnIcon />}
+              onClick={() => handleActiveToggle(row)}
+            >
+              Mark as Active
+            </Button>
+          )}
+          {row.is_active && (
+            <Button
+              color="error"
+              variant="outlined"
+              size="small"
+              endIcon={<DeleteIcon />}
+              onClick={() => handleDeleteClick(row)}
+            >
+              Delete
+            </Button>
+          )}
           {/* <FormGroup>
             <FormControlLabel
               control={<Android12Switch defaultChecked />}
-              label="Android 12"
+              // label="Active"
             />
           </FormGroup> */}
-          <Button
-            color="error"
-            size="small"
-            endIcon={<EditIcon />}
-            onClick={() => handleEditClick(row)}
-          >
-            Edit
-          </Button>
         </div>
       </>
     );
@@ -269,11 +311,24 @@ const Students = () => {
     }
     return <Chip label={label} color={color} size="small" />;
   };
+
+  const studentChipRenderer = (row) => {
+    if (row.is_active) {
+      return <p>{row.admission_number}</p>;
+    } else {
+      return (
+        <>
+          {row.admission_number}{" "}
+          <Chip label="Inactive" size="small" color="error" />
+        </>
+      );
+    }
+  };
   const convertToTableData = (list = []) => {
     return list.map((row) => {
       return {
         id: row.admission_number,
-        admissionNo: row.admission_number,
+        admissionNo: studentChipRenderer(row),
         name: row.name,
         standard: row?.standard?.id
           ? `${row?.standard?.standard} - ${row?.standard?.section}`
@@ -303,6 +358,8 @@ const Students = () => {
         setSelectedPaymentStatus(e.target.value);
       } else if (e.target.name === "section") {
         setSelectedSection(e.target.value);
+      } else if (e.target.name === "studentStatus") {
+        setSelectedStudentStatus(e.target.value);
       }
     }
   };
@@ -317,6 +374,9 @@ const Students = () => {
 
   const constructQueryParams = () => {
     let filters = [];
+    if (selectedStudentStatus) {
+      filters.push(`studentStatus=${selectedStudentStatus}`);
+    }
     if (selectedTerm) {
       filters.push(`term=${selectedTerm}`);
     }
@@ -367,6 +427,7 @@ const Students = () => {
     selectedSection,
     page,
     rowsPerPage,
+    selectedStudentStatus,
   ]);
 
   useEffect(() => {
@@ -436,6 +497,25 @@ const Students = () => {
       setOpenEditModal(false);
       setEditData(null);
       resetForm.resetForm();
+    } catch (err) {
+      setLoading(false);
+      enqueueSnackbar(err?.response?.data?.message || err.message, {
+        variant: "error",
+      });
+      HandleError(err, navigate);
+    }
+  };
+
+  const handleConfirmActiveStudent = async (id) => {
+    try {
+      setLoading(true);
+      let response = await markStudentActive(id);
+      response = response.data;
+      enqueueSnackbar(response.message, { variant: "success" });
+      await getStudentListService();
+      setLoading(false);
+      setToggleConfirmationModal(false);
+      setEditData(null);
     } catch (err) {
       setLoading(false);
       enqueueSnackbar(err?.response?.data?.message || err.message, {
@@ -584,6 +664,27 @@ const Students = () => {
                       ),
                     }}
                   />
+                  <Box>
+                    <FormControl
+                      size="small"
+                      style={{ width: "160px", marginLeft: "15px" }}
+                    >
+                      <InputLabel id="beautiful-dropdown-label">
+                        Status
+                      </InputLabel>
+                      <Select
+                        labelId="beautiful-dropdown-label"
+                        id="beautiful-dropdown"
+                        value={selectedStudentStatus}
+                        onChange={handleFilterChange}
+                        label="Status"
+                        name="studentStatus"
+                      >
+                        <MenuItem value="active">Active</MenuItem>
+                        <MenuItem value="inactive">Inactive</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
                   <Button
                     style={{ marginLeft: "20px" }}
                     onClick={handleClearFilter}
@@ -731,6 +832,18 @@ const Students = () => {
                   studentDetails={editData}
                 />
               )}
+              <ToggleConfirmationModal
+                open={toggleConfirmationModal}
+                handleClose={() => {
+                  setEditData(null);
+                  setToggleConfirmationModal(false);
+                }}
+                handleConfirm={handleConfirmActiveStudent}
+                loading={loading}
+                id={editData?.id}
+                admissionNumber={editData?.admission_number}
+                name={editData?.name}
+              />
             </div>
           </>
         )}

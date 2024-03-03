@@ -133,7 +133,7 @@ const Sections = () => {
     },
     {
       id: "teacherName",
-      label: "Teacher Name",
+      label: "Teacher Name - ID",
     },
     {
       id: "totalStudents",

@@ -83,6 +83,7 @@ const AddStandardModal = ({
             >
               <TextField
                 label="Standard"
+                required
                 type="text"
                 {...getFieldProps("standard")}
                 error={Boolean(touched.standard && errors.standard)}
@@ -90,6 +91,7 @@ const AddStandardModal = ({
               />
               <TextField
                 label="Section"
+                required
                 type="text"
                 {...getFieldProps("section")}
                 error={Boolean(touched.section && errors.section)}

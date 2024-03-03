@@ -31,12 +31,16 @@ const AddStudentModal = ({
     admissionNumber: Yup.string().required("Admission No is required"),
     studentName: Yup.string().required("Student Name is required"),
     fathersName: Yup.string().required("Fathers Name is required"),
-    // // mothersName: Yup.string().required("Admission No is required"),
+    mothersName: Yup.string().optional(),
     section: Yup.number()
       .required("Select a Standard & Section")
       .moreThan(0, "Select a Standard & Section"),
-    parentMobileNumber: Yup.string().required("Mobile Number is required"),
-    // // alternateMobileNumber: Yup.string().required("Admission No is required"),
+    parentMobileNumber: Yup.string()
+      .required("Mobile Number is required")
+      .matches(/^[6-9]\d{9}$/, "Not a valid mobile number"),
+    alternateMobileNumber: Yup.string()
+      .optional()
+      .matches(/^[6-9]\d{9}$/, "Not a valid mobile number"),
     parentEmail: Yup.string()
       .email("Invalid email id")
       .required("Email is required"),
@@ -46,7 +50,6 @@ const AddStudentModal = ({
     termOneSCFees: Yup.number().when(["termOneFees"], {
       is: (termOneFees) => termOneFees && termOneFees !== "",
       then: () => Yup.number().required("Term One SC Fees is required"),
-      //   .moreThan(0, "SC Fees should not be zero"),
     }),
     termOneDueDate: Yup.string().when("termOneFees", {
       is: (val) => val && val !== "",
@@ -56,7 +59,6 @@ const AddStudentModal = ({
     termTwoSCFees: Yup.number().when("termTwoFees", {
       is: (val) => val && val !== "",
       then: () => Yup.number().required("Term Two SC Fees is required"),
-      //   .moreThan(0, "SC Fees should not be zero"),
     }),
     termTwoDueDate: Yup.string().when("termTwoFees", {
       is: (val) => val && val !== "",
@@ -68,7 +70,6 @@ const AddStudentModal = ({
     termThreeSCFees: Yup.string().when("termThreeFees", {
       is: (val) => val && val !== "",
       then: () => Yup.number().required("Term Three SC Fees is required"),
-      //   .moreThan(0, "SC Fees should not be zero"),
     }),
     termThreeDueDate: Yup.string().when("termThreeFees", {
       is: (val) => val && val !== "",
@@ -154,6 +155,7 @@ const AddStudentModal = ({
               </Typography>
               <TextField
                 label="Admission No"
+                required
                 type="text"
                 {...getFieldProps("admissionNumber")}
                 error={Boolean(
@@ -163,6 +165,7 @@ const AddStudentModal = ({
               />
               <TextField
                 label="Student Name"
+                required
                 type="text"
                 {...getFieldProps("studentName")}
                 error={Boolean(touched.studentName && errors.studentName)}
@@ -170,6 +173,7 @@ const AddStudentModal = ({
               />
               <TextField
                 label="Father's Name"
+                required
                 type="text"
                 {...getFieldProps("fathersName")}
                 error={Boolean(touched.fathersName && errors.fathersName)}
@@ -184,8 +188,10 @@ const AddStudentModal = ({
               />
               <TextField
                 label="Parent Mobile Number"
+                required
                 type="text"
                 {...getFieldProps("parentMobileNumber")}
+                inputProps={{ maxLength: 10 }}
                 error={Boolean(
                   touched.parentMobileNumber && errors.parentMobileNumber
                 )}
@@ -197,6 +203,7 @@ const AddStudentModal = ({
                 label="Alternate Mobile Number"
                 type="text"
                 {...getFieldProps("alternateMobileNumber")}
+                inputProps={{ maxLength: 10 }}
                 error={Boolean(
                   touched.alternateMobileNumber && errors.alternateMobileNumber
                 )}
@@ -206,16 +213,21 @@ const AddStudentModal = ({
               />
               <TextField
                 label="Parent email"
+                required
                 type="text"
                 {...getFieldProps("parentEmail")}
                 error={Boolean(touched.parentEmail && errors.parentEmail)}
                 helperText={touched.parentEmail && errors.parentEmail}
               />
-              <FormControl error={Boolean(touched.section && errors.section)}>
+              <FormControl
+                error={Boolean(touched.section && errors.section)}
+                required
+              >
                 <InputLabel id="beautiful-dropdown-label">
                   Standard & Section
                 </InputLabel>
                 <Select
+                  required
                   labelId="demo-simple-select-readonly-label"
                   id="beautiful-dropdown"
                   label="Standard & Section"

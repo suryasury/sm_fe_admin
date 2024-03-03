@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 
-const ConfirmationModal = ({
+const ToggleConfirmationModal = ({
   open,
   handleClose,
   handleConfirm,
@@ -28,7 +28,7 @@ const ConfirmationModal = ({
       maxWidth="xs"
       fullWidth
     >
-      <DialogTitle color={"#d32f2f"}>Confirm Action - Delete</DialogTitle>
+      <DialogTitle color={"#d32f2f"}>Confirm Action - Mark Active</DialogTitle>
       <DialogContent>
         <Typography
           variant="body2"
@@ -37,7 +37,7 @@ const ConfirmationModal = ({
           fontWeight={"normal"}
           fontSize={"17px"}
         >
-          Are you certain you wish to delete this student?
+          Are you certain you wish to mark this student as Active?
         </Typography>
         <Typography variant="body2" color="textSecondary" mb={2}>
           Admission No: <b>{admissionNumber || ""}</b>
@@ -45,8 +45,7 @@ const ConfirmationModal = ({
           Student Name: <b>{name || ""}</b>
         </Typography>
         <Alert severity="info" style={{ marginTop: "10px" }}>
-          This action will make the student status as inactive. You will still
-          be able to view any associated fees transactions for the student.
+          This action will make the student status as Active.
         </Alert>
       </DialogContent>
       <DialogActions>
@@ -77,4 +76,4 @@ const ConfirmationModal = ({
   );
 };
 
-export default ConfirmationModal;
+export default ToggleConfirmationModal;

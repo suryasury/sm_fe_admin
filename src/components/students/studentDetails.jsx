@@ -253,7 +253,7 @@ const StudentDetails = () => {
                     <Grid container spacing={3} style={{ padding: "20px" }}>
                       <Grid item xs={12} sm={6} lg={3}>
                         <Typography variant="body1">
-                          <strong>Name:</strong> {studentDetails.name}
+                          <strong>Student Name:</strong> {studentDetails.name}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} lg={3}>
@@ -264,7 +264,7 @@ const StudentDetails = () => {
                       </Grid>
                       <Grid item xs={12} sm={6} lg={3}>
                         <Typography variant="body1">
-                          <strong>Standard/Section:</strong>{" "}
+                          <strong>Standard&Section:</strong>{" "}
                           {studentDetails.standard.standard} -{" "}
                           {studentDetails.standard.section}
                         </Typography>
@@ -278,7 +278,15 @@ const StudentDetails = () => {
                       <Grid item xs={12} sm={6} lg={3}>
                         <Typography variant="body1">
                           <strong>Mothers Name:</strong>{" "}
-                          {studentDetails.mother_name}
+                          {studentDetails.mother_name || (
+                            <span
+                              style={{
+                                color: "red",
+                              }}
+                            >
+                              Not Provided
+                            </span>
+                          )}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} lg={3}>
@@ -295,8 +303,16 @@ const StudentDetails = () => {
                       </Grid>
                       <Grid item xs={12} sm={6} lg={3}>
                         <Typography variant="body1">
-                          <strong>Alternate Mobile number:</strong>{" "}
-                          {studentDetails.alternate_mobile_number}
+                          <strong>Alt Mobile number:</strong>{" "}
+                          {studentDetails.alternate_mobile_number || (
+                            <span
+                              style={{
+                                color: "red",
+                              }}
+                            >
+                              Not Provided
+                            </span>
+                          )}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -435,6 +451,7 @@ const StudentDetails = () => {
                       term={selectedFeesDetails?.term}
                       handleClose={() => {
                         setSelectedFeesDetails(null);
+                        setDeleteModal(false);
                       }}
                       handleConfirm={handleDeleteFees}
                     />

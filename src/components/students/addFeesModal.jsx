@@ -88,7 +88,10 @@ const AddFeesModal = ({
               noValidate
               autoComplete="off"
             >
-              <FormControl error={Boolean(touched.term && errors.term)}>
+              <FormControl
+                error={Boolean(touched.term && errors.term)}
+                required
+              >
                 <InputLabel id="beautiful-dropdown-label">Term</InputLabel>
                 <Select
                   labelId="demo-simple-select-readonly-label"
@@ -110,6 +113,7 @@ const AddFeesModal = ({
               </FormControl>
               <TextField
                 label="Term Fees"
+                required
                 type="number"
                 {...getFieldProps("total_amount")}
                 error={Boolean(touched.total_amount && errors.total_amount)}
@@ -117,6 +121,7 @@ const AddFeesModal = ({
               />
               <TextField
                 label="SC Fees"
+                required
                 type="number"
                 {...getFieldProps("sc_fees")}
                 error={Boolean(touched.sc_fees && errors.sc_fees)}
@@ -125,6 +130,7 @@ const AddFeesModal = ({
               <FormControl
                 error={Boolean(touched.due_date && errors.due_date)}
                 style={{ marginTop: "0px", marginLeft: "0" }}
+                required
               >
                 <DatePicker
                   label="Due Date"

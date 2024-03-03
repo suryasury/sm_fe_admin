@@ -23,7 +23,9 @@ const EditAdminModal = ({
     name: Yup.string().required("Admin Name is required"),
     id: Yup.string().required("ID is required"),
     email: Yup.string().email("Invalid email ID").required("Email is required"),
-    mobileNumber: Yup.string().required("Mobile Number is required"),
+    mobileNumber: Yup.string()
+      .required("Mobile Number is required")
+      .matches(/^[6-9]\d{9}$/, "Not a valid mobile number"),
   });
   const formik = useFormik({
     initialValues: {
@@ -72,6 +74,7 @@ const EditAdminModal = ({
             >
               <TextField
                 label="Email"
+                required
                 type="text"
                 disabled
                 {...getFieldProps("email")}
@@ -80,6 +83,7 @@ const EditAdminModal = ({
               />
               <TextField
                 label="Admin Name"
+                required
                 type="text"
                 {...getFieldProps("name")}
                 error={Boolean(touched.name && errors.name)}
@@ -87,8 +91,10 @@ const EditAdminModal = ({
               />
               <TextField
                 label="Mobile Number"
+                required
                 type="text"
                 {...getFieldProps("mobileNumber")}
+                inputProps={{ maxLength: 10 }}
                 error={Boolean(touched.mobileNumber && errors.mobileNumber)}
                 helperText={touched.mobileNumber && errors.mobileNumber}
               />

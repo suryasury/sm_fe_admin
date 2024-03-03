@@ -33,7 +33,12 @@ const EditStudentDetailsModal = ({
     section: Yup.number()
       .required("Select a Standard & Section")
       .moreThan(0, "Select a Standard & Section"),
-    parentMobileNumber: Yup.string().required("Mobile Number is required"),
+    parentMobileNumber: Yup.string()
+      .required("Mobile Number is required")
+      .matches(/^[6-9]\d{9}$/, "Not a valid mobile number"),
+    alternateMobileNumber: Yup.string()
+      .optional()
+      .matches(/^[6-9]\d{9}$/, "Not a valid mobile number"),
     parentEmail: Yup.string()
       .email("Invalid email id")
       .required("Email is required"),
@@ -98,6 +103,7 @@ const EditStudentDetailsModal = ({
               </Typography>
               <TextField
                 label="Admission No"
+                required
                 type="text"
                 disabled
                 {...getFieldProps("admissionNumber")}
@@ -108,6 +114,7 @@ const EditStudentDetailsModal = ({
               />
               <TextField
                 label="Student Name"
+                required
                 type="text"
                 {...getFieldProps("studentName")}
                 error={Boolean(touched.studentName && errors.studentName)}
@@ -115,6 +122,7 @@ const EditStudentDetailsModal = ({
               />
               <TextField
                 label="Father's Name"
+                required
                 type="text"
                 {...getFieldProps("fathersName")}
                 error={Boolean(touched.fathersName && errors.fathersName)}
@@ -129,8 +137,10 @@ const EditStudentDetailsModal = ({
               />
               <TextField
                 label="Parent Mobile Number"
+                required
                 type="text"
                 {...getFieldProps("parentMobileNumber")}
+                inputProps={{ maxLength: 10 }}
                 error={Boolean(
                   touched.parentMobileNumber && errors.parentMobileNumber
                 )}
@@ -142,6 +152,7 @@ const EditStudentDetailsModal = ({
                 label="Alternate Mobile Number"
                 type="text"
                 {...getFieldProps("alternateMobileNumber")}
+                inputProps={{ maxLength: 10 }}
                 error={Boolean(
                   touched.alternateMobileNumber && errors.alternateMobileNumber
                 )}
@@ -151,12 +162,16 @@ const EditStudentDetailsModal = ({
               />
               <TextField
                 label="Parent email"
+                required
                 type="text"
                 {...getFieldProps("parentEmail")}
                 error={Boolean(touched.parentEmail && errors.parentEmail)}
                 helperText={touched.parentEmail && errors.parentEmail}
               />
-              <FormControl error={Boolean(touched.section && errors.section)}>
+              <FormControl
+                error={Boolean(touched.section && errors.section)}
+                required
+              >
                 <InputLabel id="beautiful-dropdown-label">
                   Standard & Section
                 </InputLabel>
