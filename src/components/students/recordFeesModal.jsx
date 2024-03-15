@@ -18,11 +18,12 @@ import {
 import { LoadingButton } from "@mui/lab";
 import { recordOfflineFees } from "../../api/api";
 import { useSnackbar } from "notistack";
-import { HandleError } from "../helpers/handleError";
+import { useHandleError } from "../helpers/handleError";
 import { useNavigate } from "react-router-dom";
 
 const RecordFeesModal = ({ open, handleClose, feesDetails }) => {
   const navigate = useNavigate();
+  const checkError = useHandleError();
   const [loading, setLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const [paymentMode, setPaymentMode] = useState("CASH");
@@ -47,7 +48,7 @@ const RecordFeesModal = ({ open, handleClose, feesDetails }) => {
         variant: "error",
       });
       setLoading(false);
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 

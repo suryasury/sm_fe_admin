@@ -10,17 +10,21 @@ import {
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { removeUserDetails } from "../../reducers/userSlice";
+
 import ResetPasswordModal from "../resetPassword/resetPasswordModal";
 
 const Header = () => {
   const userDetails = useSelector((state) => state.user.value);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("adminAccessToken");
+    dispatch(removeUserDetails());
     navigate("/login");
   };
 
@@ -43,7 +47,7 @@ const Header = () => {
         <img
           src="/static/icon_logo_image.png"
           alt="Logo"
-          style={{ margin: "10px", width: "60px", height: "60px" }}
+          style={{ margin: "10px", width: "50px", height: "50px" }}
         />
         <Typography
           variant="h6"

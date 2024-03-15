@@ -35,9 +35,9 @@ import { DeleteForever } from "@mui/icons-material";
 import AddAdminModal from "./addAdminModal";
 import EditAdminModal from "./editAdminModal";
 import DeleteConfirmationModal from "./confirmationModal";
-import { HandleError } from "../helpers/handleError";
+import { useHandleError } from "../helpers/handleError";
 import { useSelector } from "react-redux";
-import { Box } from "@mui/system";
+// import { Box } from "@mui/system";
 import TableLoader from "../helpers/tableLoader";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -68,6 +68,7 @@ const AdminUsers = () => {
   const userDetails = useSelector((state) => state.user.value);
   const navigate = useNavigate();
   const location = useLocation();
+  const checkError = useHandleError();
   const queryParams = new URLSearchParams(location.search);
   const search = queryParams.get("search");
   const currentPage = queryParams.get("page");
@@ -83,6 +84,7 @@ const AdminUsers = () => {
   const [selectedRowData, setSelectedRowData] = useState({});
   const [openEditModal, setOpenEditModal] = useState(false);
   const [editData, setEditData] = useState(null);
+  const [originalAdminList, setOriginalAdminList] = useState([]);
   const [adminList, setAdminList] = useState([]);
   const [openAddAdminModal, setOpenAddAdminModal] = useState(false);
 
@@ -94,6 +96,13 @@ const AdminUsers = () => {
     setEditData(row);
     setOpenEditModal(true);
   };
+
+  useEffect(() => {
+    if (userDetails && originalAdminList.length > 0) {
+      let formattedArray = convertToTableData(originalAdminList);
+      setAdminList(formattedArray);
+    }
+  }, [userDetails, originalAdminList]);
 
   const actionRenderer = (row) => {
     return (
@@ -152,22 +161,15 @@ const AdminUsers = () => {
       let filters = constructQueryParams();
       let result = await getAdminList(filters);
       setTotalCount(result?.data?.data?.count || 1);
-      let formattedArray = convertToTableData(
-        result?.data?.data.adminList || []
-      );
-      setAdminList(formattedArray);
+      setOriginalAdminList(result?.data?.data.adminList || []);
       setPageLoading(false);
     } catch (err) {
       setPageLoading(false);
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
-  };
-
-  const chipRenderer = (email) => {
-    return <Chip label="Current User" color="success" />;
   };
 
   const convertToTableData = (list = []) => {
@@ -267,7 +269,7 @@ const AdminUsers = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -286,7 +288,7 @@ const AdminUsers = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -306,7 +308,7 @@ const AdminUsers = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 

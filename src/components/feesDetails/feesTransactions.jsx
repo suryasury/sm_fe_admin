@@ -20,6 +20,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import {
+  downloadHistoryService,
   getAcademicYearDetails,
   getFeesDetailsById,
   getSections,
@@ -33,13 +34,15 @@ import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { Box } from "@mui/system";
-import { HandleError } from "../helpers/handleError";
+import { useHandleError } from "../helpers/handleError";
 import { DateRangePicker } from "rsuite";
 import "rsuite/dist/rsuite-no-reset.min.css";
-import { Print } from "@mui/icons-material";
+// import { Print } from "@mui/icons-material";
 import InvoiceModal from "../students/invoiceModal";
 import WysiwygIcon from "@mui/icons-material/Wysiwyg";
 import TableLoader from "../helpers/tableLoader";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import { LoadingButton } from "@mui/lab";
 const { format } = require("date-fns");
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -69,6 +72,7 @@ const ContainerStyle = {};
 const FeesTransactions = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const checkError = useHandleError();
   const queryParams = new URLSearchParams(location.search);
   const search = queryParams.get("search");
   const currentPage = queryParams.get("page");
@@ -77,8 +81,8 @@ const FeesTransactions = () => {
   const to = queryParams.get("to");
   const { enqueueSnackbar } = useSnackbar();
   const [pageLoading, setPageLoading] = useState(false);
-  const [page, setPage] = useState(currentPage ? currentPage - 1 : 0);
-  const [rowsPerPage, setRowsPerPage] = useState(pageLimit || 10);
+  const [page, setPage] = useState(currentPage ? parseInt(currentPage - 1) : 0);
+  const [rowsPerPage, setRowsPerPage] = useState(parseInt(pageLimit || 10));
   const [searchQuery, setSearchQuery] = useState(search || "");
   const [totalCount, setTotalCount] = useState(0);
   const [transactionHistoryList, setTransactionHistoryList] = useState([]);
@@ -150,6 +154,7 @@ const FeesTransactions = () => {
 
   const [selectedFeesDetails, setSelectedFeesDetails] = useState(null);
   const [openInvoiceModal, setOpenInvoiceModal] = useState(false);
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   const handleViewFeesDocument = async (row) => {
     try {
@@ -165,7 +170,7 @@ const FeesTransactions = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -251,7 +256,7 @@ const FeesTransactions = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -288,6 +293,34 @@ const FeesTransactions = () => {
         actions: actionRenderer(row),
       };
     });
+  };
+
+  const handleDownloadReport = async () => {
+    try {
+      setButtonLoading(true);
+      let filters = constructQueryParams();
+      let result = await downloadHistoryService(filters);
+      const contentDisposition = result.headers["content-disposition"];
+      const filename = contentDisposition.split(";")[1].split("=")[1];
+      const decodedFilename = decodeURIComponent(filename);
+      result = result.data;
+      const blob = new Blob([result], { type: "text/csv" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", decodedFilename);
+      document.body.appendChild(link);
+      link.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+      setButtonLoading(false);
+    } catch (err) {
+      setButtonLoading(false);
+      enqueueSnackbar(err?.response?.data?.message || err.message, {
+        variant: "error",
+      });
+      checkError(err);
+    }
   };
 
   const handleChangePage = (_, newPage) => {
@@ -377,7 +410,7 @@ const FeesTransactions = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -391,7 +424,7 @@ const FeesTransactions = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -597,17 +630,16 @@ const FeesTransactions = () => {
                     </Button>
                   </div>
                 </div>
-                {/* <div>
-                    <Button
-                      variant="contained"
-                      endIcon={<PersonAddIcon />}
-                      onClick={() => {
-                        setOpenAddAdminModal(!openAddAdminModal);
-                      }}
-                    >
-                      Download
-                    </Button>
-                  </div> */}
+                <div>
+                  <LoadingButton
+                    variant="contained"
+                    title="Download report"
+                    loading={buttonLoading}
+                    onClick={handleDownloadReport}
+                  >
+                    <CloudDownloadIcon />
+                  </LoadingButton>
+                </div>
               </div>
               <Paper
                 sx={{ width: "100%", overflow: "hidden", marginTop: "30px" }}
@@ -646,13 +678,13 @@ const FeesTransactions = () => {
                               </TableCell>
                             </TableRow>
                           ) : (
-                            transactionHistoryList.map((row) => {
+                            transactionHistoryList.map((row, index) => {
                               return (
                                 <StyledTableRow
                                   hover
                                   role="checkbox"
                                   tabIndex={-1}
-                                  key={row.admissionNo}
+                                  key={index}
                                 >
                                   {columns.map((column) => {
                                     const value = row[column.id];

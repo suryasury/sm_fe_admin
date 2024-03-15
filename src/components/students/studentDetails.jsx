@@ -20,7 +20,7 @@ import AddchartIcon from "@mui/icons-material/Addchart";
 import AddFeesModal from "./addFeesModal";
 import EditFeesModal from "./editFeesModal";
 import DeleteFeesConfirmationModal from "./deleteFeesConfirmationModal";
-import { HandleError } from "../helpers/handleError";
+import { useHandleError } from "../helpers/handleError";
 
 const RootStyle = styled("div")({
   display: "grid",
@@ -31,6 +31,7 @@ const RootStyle = styled("div")({
 const StudentDetails = () => {
   const navigate = useNavigate();
   const { studentId } = useParams();
+  const checkError = useHandleError();
   const { enqueueSnackbar } = useSnackbar();
   const [pageLoading, setPageLoading] = useState(true);
   const [studentDetails, setStudentDetails] = useState(null);
@@ -91,7 +92,7 @@ const StudentDetails = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -129,7 +130,7 @@ const StudentDetails = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -151,7 +152,7 @@ const StudentDetails = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -172,7 +173,7 @@ const StudentDetails = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 

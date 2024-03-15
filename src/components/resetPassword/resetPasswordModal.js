@@ -15,11 +15,12 @@ import { LoadingButton } from "@mui/lab";
 import { passwordReset } from "../../api/api";
 import { useSnackbar } from "notistack";
 import { Icon } from "@iconify/react";
-import { HandleError } from "../helpers/handleError";
+import { useHandleError } from "../helpers/handleError";
 import { useNavigate } from "react-router-dom";
 
 const ResetPasswordModal = ({ open, handleClose }) => {
   const navigate = useNavigate();
+  const checkError = useHandleError();
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,7 +43,7 @@ const ResetPasswordModal = ({ open, handleClose }) => {
     } catch (err) {
       setLoading(false);
       setError(err?.response?.data?.message || "");
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 

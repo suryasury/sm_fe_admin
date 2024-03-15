@@ -42,7 +42,7 @@ import { DeleteForever } from "@mui/icons-material";
 import AddTeacherModal from "./addTeacherModal";
 import EditTeacherModal from "./editTeacherModal";
 import DeleteConfirmationModal from "./confirmationModal";
-import { HandleError } from "../helpers/handleError";
+import { useHandleError } from "../helpers/handleError";
 import TableLoader from "../helpers/tableLoader";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -72,6 +72,7 @@ const ContainerStyle = {};
 const Teachers = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const checkError = useHandleError();
   const queryParams = new URLSearchParams(location.search);
   const search = queryParams.get("search");
   const section = queryParams.get("section");
@@ -172,7 +173,7 @@ const Teachers = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -307,7 +308,7 @@ const Teachers = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -326,7 +327,7 @@ const Teachers = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -346,7 +347,7 @@ const Teachers = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 

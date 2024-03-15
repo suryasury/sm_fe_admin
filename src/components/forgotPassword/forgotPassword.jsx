@@ -5,7 +5,7 @@ import { useNavigate, Navigate } from "react-router-dom";
 import { forgotPassword } from "../../api/api";
 import { useSnackbar } from "notistack";
 import ForgotPasswordForm from "./forgotPasswordForm";
-import { HandleError } from "../helpers/handleError";
+import { useHandleError } from "../helpers/handleError";
 
 const RootStyle = styled("div")({
   background: "rgb(249, 250, 251)",
@@ -48,6 +48,7 @@ const fadeInUp = {
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
+  const checkError = useHandleError();
   const [loading, setLoading] = useState(false);
   const navigation = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
@@ -69,7 +70,7 @@ const ForgotPassword = () => {
         variant: "error",
         preventDuplicate: true,
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 

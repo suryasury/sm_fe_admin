@@ -20,7 +20,7 @@ import {
   TableCell,
   TablePagination,
   Chip,
-  Switch,
+  // Switch,
   // FormGroup,
   // FormControlLabel,
 } from "@mui/material";
@@ -31,6 +31,7 @@ import {
   getStudentList,
   markStudentActive,
   masterUploadStudents,
+  studentListDownload,
   updateStudentDetails,
 } from "../../api/api";
 import PageLoader from "../helpers/pageLoader";
@@ -49,10 +50,12 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import AddStudentModal from "./addStudentModal";
 import EditIcon from "@mui/icons-material/Edit";
 import EditStudentDetailsModal from "./editStudentModal";
-import { HandleError } from "../helpers/handleError";
+import { useHandleError } from "../helpers/handleError";
 import TableLoader from "../helpers/tableLoader";
 import ToggleOnIcon from "@mui/icons-material/ToggleOn";
 import ToggleConfirmationModal from "./toggleConfirmationModal";
+import { LoadingButton } from "@mui/lab";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -114,6 +117,7 @@ const ContainerStyle = {};
 const Students = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const checkError = useHandleError();
   const queryParams = new URLSearchParams(location.search);
   const term = queryParams.get("term");
   const paymentStatus = queryParams.get("status");
@@ -146,6 +150,7 @@ const Students = () => {
   const [openEditModal, setOpenEditModal] = useState(false);
   const [editData, setEditData] = useState(null);
   const [toggleConfirmationModal, setToggleConfirmationModal] = useState(false);
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   const handleUpload = async (file) => {
     setLoading(false);
@@ -163,7 +168,7 @@ const Students = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -289,7 +294,35 @@ const Students = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
+    }
+  };
+
+  const handleDownloadStudentList = async () => {
+    try {
+      setButtonLoading(true);
+      let filters = constructQueryParams();
+      let result = await studentListDownload(filters);
+      const contentDisposition = result.headers["content-disposition"];
+      const filename = contentDisposition.split(";")[1].split("=")[1];
+      const decodedFilename = decodeURIComponent(filename);
+      result = result.data;
+      const blob = new Blob([result], { type: "text/csv" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", decodedFilename);
+      document.body.appendChild(link);
+      link.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+      setButtonLoading(false);
+    } catch (err) {
+      setButtonLoading(false);
+      enqueueSnackbar(err?.response?.data?.message || err.message, {
+        variant: "error",
+      });
+      checkError(err);
     }
   };
 
@@ -463,7 +496,7 @@ const Students = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -482,7 +515,7 @@ const Students = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -502,7 +535,7 @@ const Students = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -521,7 +554,7 @@ const Students = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -699,19 +732,28 @@ const Students = () => {
                     onClick={() => {
                       setOpenAddStudentModal(!openAddStudentModal);
                     }}
-                    style={{ marginRight: "15px" }}
+                    style={{ marginRight: "10px" }}
                   >
-                    Add Student
+                    Add
                   </Button>
                   <Button
                     variant="contained"
                     endIcon={<CloudUploadIcon />}
+                    style={{ marginRight: "10px" }}
                     onClick={() => {
                       setOpenUploadModal(!openUploadModal);
                     }}
                   >
                     Upload
                   </Button>
+                  <LoadingButton
+                    variant="contained"
+                    title="Download student list"
+                    loading={buttonLoading}
+                    onClick={handleDownloadStudentList}
+                  >
+                    <CloudDownloadIcon />
+                  </LoadingButton>
                 </div>
               </div>
               <Paper

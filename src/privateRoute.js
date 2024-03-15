@@ -2,7 +2,7 @@ import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { getAdminDetails } from "./api/api";
 import { useSelector, useDispatch } from "react-redux";
-import { addUserDetails } from "./reducers/userSlice";
+import { addUserDetails, removeUserDetails } from "./reducers/userSlice";
 
 const PrivateRoute = () => {
   const dispatch = useDispatch();
@@ -22,6 +22,7 @@ const GetUserDetails = async (dispatch) => {
       dispatch(addUserDetails(response.data));
     }
   } catch (err) {
+    // dispatch(removeUserDetails());
     console.log("err", err);
   }
 };

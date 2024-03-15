@@ -519,3 +519,45 @@ export const getAcademicYearDetails = async () => {
     throw err;
   }
 };
+
+export const downloadHistoryService = async (filter) => {
+  try {
+    const axiosInstance = axios.create({
+      responseType: "blob",
+    });
+    let result = await axiosInstance.get(
+      `${apiUrl}/api/admin/fees/transactions/history/download${filter}`,
+      {
+        headers: {
+          Authorization: getAuthToken(),
+        },
+        responseType: "blob",
+      }
+    );
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};
+
+export const studentListDownload = async (filter) => {
+  try {
+    const axiosInstance = axios.create({
+      responseType: "blob",
+    });
+    let result = await axiosInstance.get(
+      `${apiUrl}/api/admin/student/list/download${filter}`,
+      {
+        headers: {
+          Authorization: getAuthToken(),
+        },
+        responseType: "blob",
+      }
+    );
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};

@@ -29,9 +29,9 @@ import EditIcon from "@mui/icons-material/Edit";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import AddStandardModal from "./addStandardModal";
 import EditStandardModal from "./editStandardModal";
-import { HandleError } from "../helpers/handleError";
+import { useHandleError } from "../helpers/handleError";
 import TableLoader from "../helpers/tableLoader";
-import { Box } from "@mui/system";
+// import { Box } from "@mui/system";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -60,6 +60,7 @@ const ContainerStyle = {};
 const Sections = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const checkError = useHandleError();
   const queryParams = new URLSearchParams(location.search);
   // const search = queryParams.get("search");
   // const section = queryParams.get("section");
@@ -161,7 +162,7 @@ const Sections = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
   const getTeacherListService = async () => {
@@ -173,7 +174,7 @@ const Sections = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -285,7 +286,7 @@ const Sections = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
@@ -305,7 +306,7 @@ const Sections = () => {
       enqueueSnackbar(err?.response?.data?.message || err.message, {
         variant: "error",
       });
-      HandleError(err, navigate);
+      checkError(err);
     }
   };
 
