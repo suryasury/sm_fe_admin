@@ -561,3 +561,20 @@ export const studentListDownload = async (filter) => {
     throw err;
   }
 };
+
+export const dashBoardMerticsOverview = async (filter) => {
+  try {
+    let result = await axios.get(
+      `${apiUrl}/api/admin/dashboard/metrics/overview${filter}`,
+      {
+        headers: {
+          Authorization: getAuthToken(),
+        },
+      }
+    );
+    return result;
+  } catch (err) {
+    console.log("error", err);
+    throw err;
+  }
+};

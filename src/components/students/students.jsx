@@ -198,6 +198,7 @@ const Students = () => {
             variant="outlined"
             size="small"
             color="inherit"
+            title="View Student Details"
             endIcon={<RemoveRedEyeIcon />}
             onClick={() => handleViewClick(row)}
           >
@@ -208,6 +209,7 @@ const Students = () => {
               color="primary"
               variant="outlined"
               size="small"
+              title="Edit Student Details"
               endIcon={<EditIcon />}
               onClick={() => handleEditClick(row)}
             >
@@ -219,6 +221,7 @@ const Students = () => {
               color="error"
               variant="outlined"
               size="small"
+              title="Mark as Active"
               endIcon={<ToggleOnIcon />}
               onClick={() => handleActiveToggle(row)}
             >
@@ -230,6 +233,7 @@ const Students = () => {
               color="error"
               variant="outlined"
               size="small"
+              title="Mark as Inactive"
               endIcon={<DeleteIcon />}
               onClick={() => handleDeleteClick(row)}
             >
@@ -721,6 +725,7 @@ const Students = () => {
                   <Button
                     style={{ marginLeft: "20px" }}
                     onClick={handleClearFilter}
+                    title="Clear Filter"
                   >
                     Clear
                   </Button>
@@ -728,27 +733,29 @@ const Students = () => {
                 <div>
                   <Button
                     variant="contained"
-                    endIcon={<PersonAddIcon />}
+                    title="Add Student"
+                    // endIcon={<PersonAddIcon />}
                     onClick={() => {
                       setOpenAddStudentModal(!openAddStudentModal);
                     }}
                     style={{ marginRight: "10px" }}
                   >
-                    Add
+                    <PersonAddIcon />
                   </Button>
                   <Button
                     variant="contained"
-                    endIcon={<CloudUploadIcon />}
+                    // endIcon={<CloudUploadIcon />}
+                    title="Upload Student Master"
                     style={{ marginRight: "10px" }}
                     onClick={() => {
                       setOpenUploadModal(!openUploadModal);
                     }}
                   >
-                    Upload
+                    <CloudUploadIcon />
                   </Button>
                   <LoadingButton
                     variant="contained"
-                    title="Download student list"
+                    title="Download Student List"
                     loading={buttonLoading}
                     onClick={handleDownloadStudentList}
                   >

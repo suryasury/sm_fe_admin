@@ -59,7 +59,7 @@ const Login = () => {
       localStorage.setItem("adminAccessToken", response.data.accessToken);
       enqueueSnackbar(response.message, { variant: "success" });
       setLoading(false);
-      navigation("/student");
+      navigation("/dashboard");
     } catch (err) {
       setLoading(false);
       enqueueSnackbar(err?.response?.data?.message || err.message, {

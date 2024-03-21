@@ -24,14 +24,11 @@ import { useSnackbar } from "notistack";
 import LayoutWrapper from "../../layout/layout";
 import { tableCellClasses } from "@mui/material/TableCell";
 import EditIcon from "@mui/icons-material/Edit";
-// import { DeleteForever } from "@mui/icons-material";
-// import DeleteConfirmationModal from "./confirmationModal";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import AddStandardModal from "./addStandardModal";
 import EditStandardModal from "./editStandardModal";
 import { useHandleError } from "../helpers/handleError";
 import TableLoader from "../helpers/tableLoader";
-// import { Box } from "@mui/system";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -62,31 +59,20 @@ const Sections = () => {
   const location = useLocation();
   const checkError = useHandleError();
   const queryParams = new URLSearchParams(location.search);
-  // const search = queryParams.get("search");
-  // const section = queryParams.get("section");
   const currentPage = queryParams.get("page");
   const pageLimit = queryParams.get("limit");
   const { enqueueSnackbar } = useSnackbar();
   const [pageLoading, setPageLoading] = useState(false);
   const [teachersList, setTeachersList] = useState([]);
-  // const [selectedSection, setSelectedSection] = useState(section);
   const [page, setPage] = useState(currentPage ? currentPage - 1 : 0);
   const [rowsPerPage, setRowsPerPage] = useState(pageLimit || 10);
   // const [searchQuery, setSearchQuery] = useState(search || "");
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  // const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
-  // const [selectedRowData, setSelectedRowData] = useState({});
-  // const [openAddTeacherModal, setopenAddTeacherModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [editData, setEditData] = useState(null);
   const [standardList, setStandardList] = useState([]);
   const [addStandardModal, setAddStandardModal] = useState(false);
-
-  // const handleDeleteClick = (row) => {
-  //   setSelectedRowData(row);
-  //   setOpenConfirmationModal(true);
-  // };
   const handleEditClick = (row) => {
     setEditData(row);
     setOpenEditModal(true);
@@ -100,6 +86,7 @@ const Sections = () => {
             color="primary"
             size="small"
             variant="contained"
+            title="Edit Standard and Section"
             endIcon={<EditIcon />}
             onClick={() => handleEditClick(row)}
           >
@@ -345,6 +332,7 @@ const Sections = () => {
                   <Button
                     variant="contained"
                     endIcon={<MeetingRoomIcon />}
+                    title="Add Standard and Section"
                     onClick={() => {
                       setAddStandardModal(!addStandardModal);
                     }}

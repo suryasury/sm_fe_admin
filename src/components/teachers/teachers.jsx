@@ -111,6 +111,7 @@ const Teachers = () => {
             color="primary"
             size="small"
             variant="contained"
+            title="Edit Teacher"
             endIcon={<EditIcon />}
             onClick={() => handleEditClick(row)}
           >
@@ -120,6 +121,7 @@ const Teachers = () => {
             variant="outlined"
             size="small"
             color="error"
+            title="Delete Teacher"
             endIcon={<DeleteForever />}
             onClick={() => handleDeleteClick(row)}
           >
@@ -442,6 +444,7 @@ const Teachers = () => {
                   <div style={{ width: "300px" }}>
                     <Button
                       style={{ marginLeft: "20px" }}
+                      title="Clear Filter"
                       onClick={handleClearFilter}
                     >
                       Clear
@@ -451,6 +454,7 @@ const Teachers = () => {
                 <div>
                   <Button
                     variant="contained"
+                    title="Add Teacher"
                     endIcon={<PersonAddIcon />}
                     onClick={() => {
                       setopenAddTeacherModal(!openAddTeacherModal);

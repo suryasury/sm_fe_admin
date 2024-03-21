@@ -112,6 +112,7 @@ const AdminUsers = () => {
             color="primary"
             size="small"
             variant="contained"
+            title="Edit Admin"
             endIcon={<EditIcon />}
             onClick={() => handleEditClick(row)}
           >
@@ -121,6 +122,7 @@ const AdminUsers = () => {
             variant="outlined"
             size="small"
             color="error"
+            title="Delete Admin"
             endIcon={<DeleteForever />}
             onClick={() => handleDeleteClick(row)}
             disabled={userDetails?.email === row.email}
@@ -375,6 +377,7 @@ const AdminUsers = () => {
                     <Button
                       style={{ marginLeft: "20px" }}
                       onClick={handleClearFilter}
+                      title="Clear Filter"
                     >
                       Clear
                     </Button>
@@ -384,6 +387,7 @@ const AdminUsers = () => {
                   <Button
                     variant="contained"
                     endIcon={<PersonAddIcon />}
+                    title="Add Admin"
                     onClick={() => {
                       setOpenAddAdminModal(!openAddAdminModal);
                     }}

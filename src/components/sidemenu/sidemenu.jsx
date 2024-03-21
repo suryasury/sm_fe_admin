@@ -9,6 +9,7 @@ import ReceiptIcon from "@mui/icons-material/Receipt";
 import SchoolIcon from "@mui/icons-material/School";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import "../../App.css";
 import { useNavigate } from "react-router-dom";
 
@@ -17,6 +18,12 @@ const SideMenu = () => {
   const [activeTab, setActiveTab] = useState("");
 
   const sideMenuItems = [
+    {
+      title: "Dashboard",
+      logo: <DashboardIcon />,
+      link: "/dashboard",
+      id: "dashboard",
+    },
     {
       title: "Students",
       logo: <SchoolIcon />,
@@ -52,9 +59,9 @@ const SideMenu = () => {
   useEffect(() => {
     if (!activeTab) {
       let path = window.location.pathname;
-      let currentPageItem = sideMenuItems.find((item) =>
-        path.includes(item.link)
-      );
+      let currentPageItem = sideMenuItems.find((item) => {
+        return path.includes(item.link);
+      });
       setActiveTab(currentPageItem?.id || "");
     }
   }, []);

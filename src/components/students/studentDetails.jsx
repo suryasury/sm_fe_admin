@@ -363,7 +363,7 @@ const StudentDetails = () => {
                                   handleActionClick={(action) => {
                                     handleActionClick(action, feeDetail);
                                   }}
-                                  amount={feeDetail.total_amount}
+                                  amount={feeDetail.total_payable}
                                   dueDate={feeDetail.due_date}
                                   status={feeDetail.is_paid}
                                   term={feeDetail.term}

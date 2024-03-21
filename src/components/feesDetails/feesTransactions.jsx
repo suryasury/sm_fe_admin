@@ -182,6 +182,7 @@ const FeesTransactions = () => {
             color="primary"
             size="small"
             variant="contained"
+            title="View Fee Details"
             endIcon={<WysiwygIcon />}
             onClick={() => handleViewFeesDocument(row)}
             disabled={loading}
@@ -476,7 +477,6 @@ const FeesTransactions = () => {
                 style={{
                   opacity: "0.6",
                   fontWeight: "bolder",
-                  marginBottom: "20px",
                 }}
               >
                 Fees Transactions
@@ -493,6 +493,7 @@ const FeesTransactions = () => {
                   style={{
                     display: "flex",
                     alignItems: "center",
+                    marginTop: "20px",
                   }}
                 >
                   <DateRangePicker
@@ -515,7 +516,7 @@ const FeesTransactions = () => {
                     variant="outlined"
                     size="small"
                     style={{
-                      width: "280px",
+                      width: "250px",
                       marginLeft: "15px",
                     }}
                     value={searchQuery}
@@ -625,15 +626,20 @@ const FeesTransactions = () => {
                     <Button
                       style={{ marginLeft: "15px" }}
                       onClick={handleClearFilter}
+                      title="Clear Filter"
                     >
                       Clear
                     </Button>
                   </div>
                 </div>
-                <div>
+                <div
+                  style={{
+                    marginTop: "20px",
+                  }}
+                >
                   <LoadingButton
                     variant="contained"
-                    title="Download report"
+                    title="Download Transaction Report"
                     loading={buttonLoading}
                     onClick={handleDownloadReport}
                   >

@@ -18,6 +18,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Provider } from "react-redux";
 import store from "./reducers/store";
+import Dashboard from "./components/dashboard/dashboard";
 
 const App = () => {
   return (
@@ -54,7 +55,7 @@ const App = () => {
                   path="/student/:studentId"
                   element={<StudentDetails />}
                 />
-                <Route path="/" element={<Students />} />
+                <Route path="/student" element={<Students />} />
                 <Route path="/teachers" element={<Teachers />} />
                 <Route path="/sections" element={<Sections />} />
                 <Route path="/users" element={<AdminUsers />} />
@@ -62,6 +63,8 @@ const App = () => {
                   path="/fees-transactions"
                   element={<FeesTransactions />}
                 />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/" element={<Dashboard />} />
               </Route>
               <Route path="*" element={<PageNotFound />} />
             </Routes>
