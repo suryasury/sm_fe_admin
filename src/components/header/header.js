@@ -65,7 +65,7 @@ const Header = () => {
               fontSize: "25px",
             }}
           >
-            VLMHSS
+            Demo School
           </span>
         </Typography>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>

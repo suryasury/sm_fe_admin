@@ -92,7 +92,7 @@ const ResetPassword = () => {
                 fontWeight: "bolder",
               }}
             >
-              Venkatalakshmi Matriculation Higher Secondary School
+              Demo School
             </Typography>
             <Typography
               sx={{ color: "text.secondary", mb: 5 }}

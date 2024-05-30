@@ -57,19 +57,17 @@ const InvoiceTemplate = forwardRef(({ feeDetails }) => {
           <div className="company-details"></div>
         </div>
         <div className="company-details">
-          <h1 style={{ fontSize: "17px", lineHeight: "1.3" }}>
-            Venkatalakshmi Matriculation Higher Secondary School
-          </h1>
+          <h1 style={{ fontSize: "17px", lineHeight: "1.3" }}>Demo School</h1>
           <p style={{ lineHeight: "1.5" }}>
             2136, Trichy Rd, Singanallur
             <br />
-            Coimbatore - 641005
+            Chennai - 666666
             <br />
-            vlmhss@yahoo.co.in
+            demoschool@gmail.com
             <br />
-            www.vlmhss.com
+            www.demoschool.com
             <br />
-            +919659555989
+            +91999999999
           </p>
         </div>
       </header>
