@@ -67,7 +67,7 @@ const InvoiceTemplate = forwardRef(({ feeDetails }) => {
             <br />
             vlmhss@yahoo.co.in
             <br />
-            www.vlmhss.com
+            www.vlmhss.edu.in
             <br />
             +919659555989
           </p>
@@ -165,7 +165,7 @@ const InvoiceTemplate = forwardRef(({ feeDetails }) => {
               <td>1</td>
               <td>{convertToRomanLetters(feeDetails?.term || 1)} Term</td>
               <td>{formatDate(feesTransactions?.created_at)}</td>
-              <td>₹ {(feeDetails?.total_payable || 0).toFixed(1)}</td>
+              <td>₹ {(feeDetails?.total_amount || 0).toFixed(1)}</td>
             </tr>
           </tbody>
           <tfoot></tfoot>
