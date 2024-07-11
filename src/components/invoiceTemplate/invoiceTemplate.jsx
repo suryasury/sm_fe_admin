@@ -164,7 +164,7 @@ const InvoiceTemplate = forwardRef(({ feeDetails }) => {
             <tr>
               <td>1</td>
               <td>{convertToRomanLetters(feeDetails?.term || 1)} Term</td>
-              <td>{formatDate(feesTransactions?.created_at)}</td>
+              <td>{formatDate(feesTransactions?.transaction_date)}</td>
               <td>₹ {(feeDetails?.total_amount || 0).toFixed(1)}</td>
             </tr>
           </tbody>
