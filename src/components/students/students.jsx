@@ -132,10 +132,10 @@ const Students = () => {
   const [selectedTerm, setSelectedTerm] = useState(term || "");
   const [selectedSection, setSelectedSection] = useState(section);
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState(
-    paymentStatus || ""
+    paymentStatus || "",
   );
   const [selectedStudentStatus, setSelectedStudentStatus] = useState(
-    studentStatus || "active"
+    studentStatus || "active",
   );
   const [page, setPage] = useState(currentPage ? currentPage - 1 : 0);
   const [rowsPerPage, setRowsPerPage] = useState(pageLimit || 10);
@@ -289,7 +289,7 @@ const Students = () => {
       let result = await getStudentList(filters);
       setTotalCount(result?.data?.data?.count || 0);
       let formattedArray = convertToTableData(
-        result?.data?.data?.studentList || []
+        result?.data?.data?.studentList || [],
       );
       setStudentList(formattedArray);
       setPageLoading(false);
@@ -676,7 +676,7 @@ const Students = () => {
                     </FormControl>
                   </Box>
                   <TextField
-                    label="Admn No / Name"
+                    label="Admn No / Name / Ph.No"
                     variant="outlined"
                     size="small"
                     style={{

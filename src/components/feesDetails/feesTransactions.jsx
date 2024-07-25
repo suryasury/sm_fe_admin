@@ -79,6 +79,7 @@ const FeesTransactions = () => {
   const pageLimit = queryParams.get("limit");
   const from = queryParams.get("from");
   const to = queryParams.get("to");
+  const payedVia = queryParams.get("payedVia");
   const { enqueueSnackbar } = useSnackbar();
   const [pageLoading, setPageLoading] = useState(false);
   const [page, setPage] = useState(currentPage ? parseInt(currentPage - 1) : 0);
@@ -91,13 +92,14 @@ const FeesTransactions = () => {
   const term = queryParams.get("term");
   const [selectedSection, setSelectedSection] = useState(section || "");
   const [selectedAcademicYear, setSelectedAcademicYear] = useState(
-    academicYear || ""
+    academicYear || "",
   );
   const [selectedTerm, setSelectedTerm] = useState(term || "");
+  const [selectedPayedVia, setSelectedPayedVia] = useState(payedVia || "");
   const [academicYearList, setAcademicYearList] = useState([]);
   const [sectionList, setSectionList] = useState([]);
   const [selectedDateRange, setSelectedDateRange] = useState(
-    from && to ? [new Date(from), new Date(to)] : []
+    from && to ? [new Date(from), new Date(to)] : [],
   );
   const [loading, setLoading] = useState(false);
 
@@ -248,7 +250,7 @@ const FeesTransactions = () => {
       let result = await getTransactionHistory(filters);
       setTotalCount(result?.data?.data?.count || 1);
       let formattedArray = convertToTableData(
-        result?.data?.data.feesTransactions || []
+        result?.data?.data.feesTransactions || [],
       );
       setTransactionHistoryList(formattedArray);
       setPageLoading(false);
@@ -355,6 +357,9 @@ const FeesTransactions = () => {
     if (selectedSection) {
       filters.push(`section=${selectedSection}`);
     }
+    if (selectedPayedVia) {
+      filters.push(`payedVia=${selectedPayedVia}`);
+    }
     let currentPage = page + 1;
     if (currentPage) {
       filters.push(`page=${currentPage}`);
@@ -400,6 +405,7 @@ const FeesTransactions = () => {
     selectedAcademicYear,
     selectedSection,
     selectedDateRange,
+    selectedPayedVia,
   ]);
 
   const getAcademicYearListService = async () => {
@@ -452,6 +458,8 @@ const FeesTransactions = () => {
         setSelectedTerm(e.target.value);
       } else if (e.target.name === "paymentDateRange") {
         setSelectedDateRange(e.target.value || []);
+      } else if (e.target.name === "payedVia") {
+        setSelectedPayedVia(e.target.value);
       }
     }
   };
@@ -462,6 +470,7 @@ const FeesTransactions = () => {
     setSelectedAcademicYear("");
     setSelectedTerm("");
     setSelectedDateRange([]);
+    setSelectedPayedVia("");
   };
 
   return (
@@ -472,15 +481,34 @@ const FeesTransactions = () => {
         ) : (
           <>
             <div style={{ margin: "30px", ...ContainerStyle }}>
-              <Typography
-                variant="h4"
+              <div
                 style={{
-                  opacity: "0.6",
-                  fontWeight: "bolder",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
-                Fees Transactions
-              </Typography>
+                <Typography
+                  variant="h4"
+                  style={{
+                    opacity: "0.6",
+                    fontWeight: "bolder",
+                  }}
+                >
+                  Fees Transactions
+                </Typography>
+                <div>
+                  <LoadingButton
+                    variant="contained"
+                    title="Download Transaction Report"
+                    loading={buttonLoading}
+                    onClick={handleDownloadReport}
+                  >
+                    <CloudDownloadIcon />
+                  </LoadingButton>
+                </div>
+              </div>
+
               <div
                 style={{
                   display: "flex",
@@ -595,6 +623,28 @@ const FeesTransactions = () => {
                   <Box>
                     <FormControl
                       size="small"
+                      style={{ width: "110px", marginLeft: "15px" }}
+                    >
+                      <InputLabel id="beautiful-dropdown-label">
+                        Payed Via
+                      </InputLabel>
+                      <Select
+                        labelId="beautiful-dropdown-label"
+                        id="beautiful-dropdown"
+                        value={selectedPayedVia}
+                        onChange={handleFilterChange}
+                        label="Payed Via"
+                        name="payedVia"
+                      >
+                        <MenuItem value="">All</MenuItem>
+                        <MenuItem value={"Online"}>Online</MenuItem>
+                        <MenuItem value={"Offline"}>Offline</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
+                  <Box>
+                    <FormControl
+                      size="small"
                       style={{ width: "130px", marginLeft: "15px" }}
                     >
                       <InputLabel id="beautiful-dropdown-label">
@@ -631,20 +681,6 @@ const FeesTransactions = () => {
                       Clear
                     </Button>
                   </div>
-                </div>
-                <div
-                  style={{
-                    marginTop: "20px",
-                  }}
-                >
-                  <LoadingButton
-                    variant="contained"
-                    title="Download Transaction Report"
-                    loading={buttonLoading}
-                    onClick={handleDownloadReport}
-                  >
-                    <CloudDownloadIcon />
-                  </LoadingButton>
                 </div>
               </div>
               <Paper
